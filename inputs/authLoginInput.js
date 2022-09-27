@@ -6,7 +6,7 @@ module.exports = (params, res) => {
   body('password')
 
   const errors = validationResult(params)
-  if (!errors.isEmpty()) {
+  if (errors) {
     return res.status(422).json({ errors: errors.array() })
   }
 }
