@@ -1,7 +1,7 @@
 'use strict'
-const {
-  Model
-} = require('sequelize')
+const { Model } = require('sequelize')
+const bcrypt = require('bcrypt')
+
 module.exports = (sequelize, DataTypes) => {
   class Admin extends Model {
     /**
@@ -22,5 +22,11 @@ module.exports = (sequelize, DataTypes) => {
     paranoid: true,
     modelName: 'Admin',
   })
+
+  Admin.beforeCreate(async (params) => {
+    const salt = await bcrypt.genSalt()
+    params.password = await bcrypt.hash(params.password, salt)
+  })
+
   return Admin
 }
