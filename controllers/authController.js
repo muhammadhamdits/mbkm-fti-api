@@ -1,12 +1,14 @@
 require('dotenv').config()
-const authLoginInput = require('../inputs/authLoginInput')
+const loginInput = require('../inputs/loginInput')
 const authService = require('../services/authService')
 
-const login = (req, res) => {
-  input = authLoginInput(req.body, res)
-  console.log(input)
-  result = authService.login(input, res)
-  res.status(200).json(result)
+const login = async (req, res) => {
+  input = await loginInput(req.body)
+
+  if (input.status != 202) result = input
+  else result = await authService.login(input.output)
+
+  res.status(result.status).json(result.output)
 }
 
 module.exports = {

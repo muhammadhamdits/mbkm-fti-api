@@ -2,22 +2,21 @@ require('dotenv').config()
 const { JWT_SECRET, JWT_EXP } = process.env
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const Admin = require('../models/admin')
+const Admin = require('../models').Admin
 
-const login = (params, res) => {
+const login = async (params) => {
   const { username, password } = params
-  Admin.findOne({ where: { username } })
-    .then((admin) => {
-      if (admin && bcrypt.compareSync(password, admin.password)) {
-        const token = generateToken({ id: admin.id, username: admin.username })
-        return { user: admin, token: token }
-      } else {
-        res.status(401).json({ message: 'Invalid credentials' })
-      }
-    })
-    .catch((err) => {
-      res.status(500).json({ message: err.message })
-    })
+  const admin = await Admin.findOne({ where: { username } })
+
+  err_msg = "Username or password is incorrect"
+  if (!admin) return { status: 401, output: { message: err_msg } }
+
+  const isPasswordValid = await bcrypt.compare(password, admin.password)
+  const { password: _, ...adminData } = admin.dataValues
+  if (!isPasswordValid) return { status: 401, output: { message: err_msg } }
+
+  const token = generateToken(adminData)
+  return { status: 200, output: { token } }
 }
 
 const generateToken = (payload) => {
