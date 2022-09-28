@@ -23,6 +23,10 @@ const login = async (req, res) => {
 
 const fetchUser = async (req, res) => {
   params = req.matchedData
+  
+  user = req.decoded
+  if(user.role != 'admin') return res.status(401).json({ message: 'Unauthorized' })
+
   result = await axios.get(params.url)
   
   createdUser = bulkCreateUsers(params.type, result.data)
