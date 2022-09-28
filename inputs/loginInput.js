@@ -2,9 +2,9 @@ const applicationInput = require('./applicationInput')
 
 module.exports = async (params) => {
   keys = {
-    required: ['username', 'password'],
-    optional: []
+    required: ['password'],
+    optional: ['username', 'nip', 'nim']
   }
 
-  return await applicationInput(keys, params)
+  return await applicationInput(keys, params, 'only')
 }
