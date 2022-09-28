@@ -31,6 +31,6 @@ module.exports = async (keys, params) => {
   } catch (errors) {
     errorsOutput = { errors: JSON.parse(errors.message) }
 
-    return { status: 401, output: errorsOutput }
+    return { status: 422, output: errorsOutput }
   }
 }
