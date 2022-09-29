@@ -27,7 +27,9 @@ const update = async (req, res) => {
 
   authorizeUser(user, ['admin'], res)
 
-  agency = await Agency.update(params, { where: { id: params.id } })
+  agency = await Agency.findByPk(params.id)
+  if (!agency) return res.status(404).json({ message: 'Agency not found' })
+  agency = await agency.update(params)
 
   return res.status(200).json({ agency })
 }
@@ -38,7 +40,9 @@ const destroy = async (req, res) => {
 
   authorizeUser(user, ['admin'], res)
 
-  agency = await Agency.destroy({where: params })
+  agency = await Agency.findByPk(params.id)
+  if (!agency) return res.status(404).json({ message: 'Agency not found' })
+  await agency.destroy()
 
   return res.status(200).json({ agency })
 }

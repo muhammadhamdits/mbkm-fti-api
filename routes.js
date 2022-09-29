@@ -3,7 +3,8 @@ module.exports = (app) => {
   const router = new Router()
   const authController = require('./controllers/authController')
   const agenciesController = require('./controllers/agenciesController')
-
+  const programTypesController = require('./controllers/programTypesController')
+  
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
   const fetchUserValidation = require('./validation/auths/fetchUserValidation')
@@ -14,6 +15,11 @@ module.exports = (app) => {
   const createAgenciesValidation = require('./validation/agencies/createAgenciesValidation')
   const updateAgenciesValidation = require('./validation/agencies/updateAgenciesValidation')
   const deleteAgenciesValidation = require('./validation/agencies/deleteAgenciesValidation')
+  
+  const getProgramTypesValidation = require('./validation/programTypes/getProgramTypesValidation')
+  const createProgramTypesValidation = require('./validation/programTypes/createProgramTypesValidation')
+  const updateProgramTypesValidation = require('./validation/programTypes/updateProgramTypesValidation')
+  const deleteProgramTypesValidation = require('./validation/programTypes/deleteProgramTypesValidation')
 
   const authMiddleware = require('./middlewares/authMiddleware')
 
@@ -52,6 +58,23 @@ module.exports = (app) => {
   router.delete('/agencies/:id',
     validate(deleteAgenciesValidation),
     agenciesController.destroy
+  )
+
+  router.get('/program-types',
+    validate(getProgramTypesValidation),
+    programTypesController.index
+  )
+  router.post('/program-types',
+    validate(createProgramTypesValidation),
+    programTypesController.create
+  )
+  router.put('/program-types/:id',
+    validate(updateProgramTypesValidation),
+    programTypesController.update
+  )
+  router.delete('/program-types/:id',
+    validate(deleteProgramTypesValidation),
+    programTypesController.destroy
   )
   
   app.use('/api', router)
