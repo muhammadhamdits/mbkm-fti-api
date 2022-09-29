@@ -1,6 +1,8 @@
 const Program = require('../models').Program
 const Agency = require('../models').Agency
+const Course = require('../models').Course
 const ProgramType = require('../models').ProgramType
+const ProgramCourse = require('../models').ProgramCourse
 const { authorizeUser } = require('../controllers/authController')
 
 const index = async (req, res) => {
@@ -70,9 +72,54 @@ const destroy = async (req, res) => {
   return res.status(200).json({ message: 'Program deleted' })
 }
 
+const addCourse = async (req, res) => {
+  params = req.matchedData
+  user = req.decoded
+
+  authorizeUser(user, ['admin'], res)
+
+  program = await Program.findByPk(params.programId)
+  if (!program) return res.status(404).json({ message: 'Program not found' })
+
+  courses = await Course.findAll({ where: { id: params.courseIds } })
+  if (courses.length != params.courseIds.length) 
+    return res.status(404).json({ message: 'Some course not found' })
+  
+  await ProgramCourse.bulkCreate(params.courseIds.map(courseId => {
+    return { programId: params.programId, courseId }
+  }))
+
+  return res.status(200).json({ message: 'Courses added' })
+}
+
+const discardCourse = async (req, res) => {
+  params = req.matchedData
+  user = req.decoded
+
+  authorizeUser(user, ['admin'], res)
+
+  program = await Program.findByPk(params.programId)
+  if (!program) return res.status(404).json({ message: 'Program not found' })
+  
+  course = await Course.findByPk(params.courseId)
+  if (!course) return res.status(404).json({ message: 'Course not found' })
+  
+  programCourse = await ProgramCourse.findOne({ where: { 
+    programId: params.programId,
+    courseId: params.courseId 
+  }})
+  if (!programCourse) return res.status(404).json({ message: 'Course not found in program' })
+
+  await programCourse.destroy()
+
+  return res.status(200).json({ message: 'Course discarded from program' })
+}
+
 module.exports = {
   index,
   create,
   update,
-  destroy
+  destroy,
+  addCourse,
+  discardCourse
 }
