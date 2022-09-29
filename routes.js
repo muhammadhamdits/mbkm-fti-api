@@ -105,6 +105,7 @@ module.exports = (app) => {
     validate(deleteProgramsValidation),
     programsController.destroy
   )
+  
   router.post('/programs/:programId/courses',
     validate(addProgramCourseValidation),
     programsController.addCourse
