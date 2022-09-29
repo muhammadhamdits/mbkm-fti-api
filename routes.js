@@ -22,12 +22,10 @@ module.exports = (app) => {
     validate(fetchUserValidation),
     authController.fetchUser
   )
-
   router.post('/bulk-upsert/students',
     validate(bulkUpsertStudentValidation),
     authController.bulkUpsertStudent
   )
-
   router.post('/bulk-upsert/lecturers',
     validate(bulkUpsertLecturerValidation),
     authController.bulkUpsertLecturer
