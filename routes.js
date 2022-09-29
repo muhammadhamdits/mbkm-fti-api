@@ -7,6 +7,7 @@ module.exports = (app) => {
   const programsController = require('./controllers/programsController')
   const coursesController = require('./controllers/coursesController')
   const studentProgramsController = require('./controllers/studentProgramsController')
+
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
