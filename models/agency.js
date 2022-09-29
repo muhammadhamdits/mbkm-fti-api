@@ -13,7 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Agency.init({
-    name: DataTypes.STRING,
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
     address: DataTypes.STRING,
     webUrl: DataTypes.STRING,
     description: DataTypes.STRING,
@@ -23,6 +27,6 @@ module.exports = (sequelize, DataTypes) => {
     paranoid: true,
     modelName: 'Agency',
   })
-  
+
   return Agency
 }

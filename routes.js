@@ -5,12 +5,15 @@ module.exports = (app) => {
   const agenciesController = require('./controllers/agenciesController')
 
   const validate = require('./validation/validate')
-  const loginValidation = require('./validation/loginValidation')
-  const fetchUserValidation = require('./validation/fetchUserValidation')
-  const bulkUpsertStudentValidation = require('./validation/bulkUpsertStudentValidation')
-  const bulkUpsertLecturerValidation = require('./validation/bulkUpsertLecturerValidation')
+  const loginValidation = require('./validation/auths/loginValidation')
+  const fetchUserValidation = require('./validation/auths/fetchUserValidation')
+  const bulkUpsertStudentValidation = require('./validation/auths/bulkUpsertStudentValidation')
+  const bulkUpsertLecturerValidation = require('./validation/auths/bulkUpsertLecturerValidation')
 
-  const getAgenciesValidation = require('./validation/getAgenciesValidation')
+  const getAgenciesValidation = require('./validation/agencies/getAgenciesValidation')
+  const createAgenciesValidation = require('./validation/agencies/createAgenciesValidation')
+  const updateAgenciesValidation = require('./validation/agencies/updateAgenciesValidation')
+  const deleteAgenciesValidation = require('./validation/agencies/deleteAgenciesValidation')
 
   const authMiddleware = require('./middlewares/authMiddleware')
 
@@ -37,6 +40,18 @@ module.exports = (app) => {
   router.get('/agencies',
     validate(getAgenciesValidation),
     agenciesController.index
+  )
+  router.post('/agencies',
+    validate(createAgenciesValidation),
+    agenciesController.create
+  )
+  router.put('/agencies/:id',
+    validate(updateAgenciesValidation),
+    agenciesController.update
+  )
+  router.delete('/agencies/:id',
+    validate(deleteAgenciesValidation),
+    agenciesController.destroy
   )
   
   app.use('/api', router)
