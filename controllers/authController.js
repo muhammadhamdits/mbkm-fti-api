@@ -4,7 +4,7 @@ const Student = require('../models').Student
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const axios = require('axios')
-const { JWT_SECRET, JWT_EXP } = process.env
+const { JWT_SECRET, JWT_EXP, BASE_URL, SERVER_PORT } = process.env
 
 const login = async (req, res) => {
   params = req.matchedData
@@ -28,10 +28,51 @@ const fetchUser = async (req, res) => {
   if(user.role != 'admin') return res.status(401).json({ message: 'Unauthorized' })
 
   result = await axios.get(params.url)
+  createdUser = await bulkCreateUsers(params.type, result.data)
   
-  createdUser = bulkCreateUsers(params.type, result.data)
-  
-  return res.status(200).json({ message: 'success' })
+  return res.status(200).json({ users: createdUser })
+}
+
+const bulkUpsertStudent = async (req, res) => {
+  params = req.matchedData
+
+  user = req.decoded
+  if(user.role != 'admin') return res.status(401).json({ message: 'Unauthorized' })
+
+  students = params.students
+  upsertStudents = await Student.bulkCreate(students,
+    { 
+      returning: true,
+      fields: ['nim', 'name'],
+      updateOnDuplicate: ['name']
+    }
+  )
+
+  students = upsertStudents.map(student => { return student.dataValues })
+  students = students.map(({id, ...rest}) => { return rest })
+
+  return res.status(200).json({ students })
+}
+
+const bulkUpsertLecturer = async (req, res) => {
+  params = req.matchedData
+
+  user = req.decoded
+  if(user.role != 'admin') return res.status(401).json({ message: 'Unauthorized' })
+
+  lecturers = params.lecturers
+  upsertLecturers = await Lecturer.bulkCreate(lecturers,
+    {
+      returning: true,
+      fields: ['nip', 'name'],
+      updateOnDuplicate: ['name']
+    }
+  )
+
+  lecturers = upsertLecturers.map(lecturer => { return lecturer.dataValues })
+  lecturers = lecturers.map(({id, ...rest}) => { return rest })
+
+  return res.status(200).json({ lecturers })
 }
 
 const getUser = async (username) => {
@@ -59,23 +100,31 @@ const buildPayload = (user) => {
 
 const bulkCreateUsers = async (type, data) => {
   if(type == 'student') {
-    Student.bulkCreate(data,
-      {
-        fields: ['name', 'nim'],
-        updateOnDuplicate: ['name']
-      }
-    )
+    fetchUrl = `${BASE_URL}:${SERVER_PORT}/api/bulk-upsert/students`
+    students = await axios.post(fetchUrl, JSON.stringify(data), {
+      headers: { 
+        'Authorization': `Bearer ${generateToken({ role: 'admin' })}`,
+        'Content-Type': 'application/json'
+      },
+    })
+    
+    return students.data.students
   } else if(type == 'lecturer') {
-    Lecturer.bulkCreate(data,
-      {
-        fields: ['name', 'nip'],
-        updateOnDuplicate: ['name']
-      }
-    )
+    fetchUrl = `${BASE_URL}:${SERVER_PORT}/api/bulk-upsert/lecturers`
+    lecturers = await axios.post(fetchUrl, JSON.stringify(data), {
+      headers: { 
+        'Authorization': `Bearer ${generateToken({ role: 'admin' })}`,
+        'Content-Type': 'application/json'
+      },
+    })
+
+    return lecturers.data.lecturers
   }
 }
 
 module.exports = {
   login,
-  fetchUser
+  fetchUser,
+  bulkUpsertStudent,
+  bulkUpsertLecturer
 }
