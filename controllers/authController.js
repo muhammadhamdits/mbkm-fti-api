@@ -25,7 +25,7 @@ const fetchUser = async (req, res) => {
   params = req.matchedData
   
   user = req.decoded
-  if(user.role != 'admin') return res.status(401).json({ message: 'Unauthorized' })
+  authorizeUser(user, ['admin'], res)
 
   result = await axios.get(params.url)
   createdUser = await bulkCreateUsers(params.type, result.data)
@@ -37,21 +37,27 @@ const bulkUpsertStudent = async (req, res) => {
   params = req.matchedData
 
   user = req.decoded
-  if(user.role != 'admin') return res.status(401).json({ message: 'Unauthorized' })
-
+  authorizeUser(user, ['admin'], res)
+  
   students = params.students
-  upsertStudents = await Student.bulkCreate(students,
-    { 
-      returning: true,
-      fields: ['nim', 'name'],
-      updateOnDuplicate: ['name']
-    }
-  )
 
-  students = upsertStudents.map(student => { return student.dataValues })
-  students = students.map(({id, ...rest}) => { return rest })
+  try {
+    upsertStudents = await Student.bulkCreate(students,
+      { 
+        returning: true,
+        fields: ['nim', 'name'],
+        updateOnDuplicate: ['name']
+      }
+    )
 
-  return res.status(200).json({ students })
+
+    students = upsertStudents.map(student => { return student.dataValues })
+    students = students.map(({id, ...rest}) => { return rest })
+
+    return res.status(200).json({ students })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 const bulkUpsertLecturer = async (req, res) => {
@@ -61,19 +67,30 @@ const bulkUpsertLecturer = async (req, res) => {
   if(user.role != 'admin') return res.status(401).json({ message: 'Unauthorized' })
 
   lecturers = params.lecturers
-  upsertLecturers = await Lecturer.bulkCreate(lecturers,
-    {
-      returning: true,
-      fields: ['nip', 'name'],
-      updateOnDuplicate: ['name']
-    }
-  )
+  
+  try {
+    upsertLecturers = await Lecturer.bulkCreate(lecturers,
+      {
+        returning: true,
+        fields: ['nip', 'name'],
+        updateOnDuplicate: ['name']
+      }
+    )
+    
+    lecturers = upsertLecturers.map(lecturer => { return lecturer.dataValues })
+    lecturers = lecturers.map(({id, ...rest}) => { return rest })
 
-  lecturers = upsertLecturers.map(lecturer => { return lecturer.dataValues })
-  lecturers = lecturers.map(({id, ...rest}) => { return rest })
-
-  return res.status(200).json({ lecturers })
+    return res.status(200).json({ lecturers })
+  } catch (error) {
+    console.log(error)
+  }
 }
+
+const authorizeUser = (user, roles, res) => {
+  if(!roles.includes(user.role)) return res.status(401).json({ message: 'Unauthorized' })
+}
+
+// private functions
 
 const getUser = async (username) => {
   user = await Admin.findOne({ username: username })
@@ -105,7 +122,7 @@ const bulkCreateUsers = async (type, data) => {
       headers: { 
         'Authorization': `Bearer ${generateToken({ role: 'admin' })}`,
         'Content-Type': 'application/json'
-      },
+      }
     })
     
     return students.data.students
@@ -115,7 +132,7 @@ const bulkCreateUsers = async (type, data) => {
       headers: { 
         'Authorization': `Bearer ${generateToken({ role: 'admin' })}`,
         'Content-Type': 'application/json'
-      },
+      }
     })
 
     return lecturers.data.lecturers
@@ -126,5 +143,6 @@ module.exports = {
   login,
   fetchUser,
   bulkUpsertStudent,
-  bulkUpsertLecturer
+  bulkUpsertLecturer,
+  authorizeUser
 }

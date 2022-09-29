@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Lecturers', {
+    await queryInterface.createTable('ProgramTypes', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -10,14 +10,9 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING(100)
+        type: Sequelize.STRING
       },
-      nip: {
-        type: Sequelize.STRING(25),
-        unique: true,
-        allowNull: false
-      },
-      password: {
+      description: {
         type: Sequelize.STRING
       },
       createdAt: {
@@ -35,6 +30,6 @@ module.exports = {
     })
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Lecturers')
+    await queryInterface.dropTable('ProgramTypes')
   }
 }
