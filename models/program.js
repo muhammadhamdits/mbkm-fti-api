@@ -18,6 +18,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'programTypeId',
         as: 'programType'
       })
+      
+      Program.belongsToMany(models.Course, {
+        through: 'ProgramCourse',
+        as: 'courses',
+        foreignKey: 'programId'
+      })
     }
   }
   Program.init({
