@@ -10,10 +10,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100)
       },
       nip: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(25),
         unique: true,
         allowNull: false
       },
