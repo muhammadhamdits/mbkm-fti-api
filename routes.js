@@ -6,6 +6,7 @@ module.exports = (app) => {
   const programTypesController = require('./controllers/programTypesController')
   const programsController = require('./controllers/programsController')
   const coursesController = require('./controllers/coursesController')
+  const studentProgramsController = require('./controllers/studentProgramsController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -32,6 +33,11 @@ module.exports = (app) => {
 
   const addProgramCourseValidation = require('./validation/programCourses/addProgramCourseValidation')
   const discardProgramCourseValidation = require('./validation/programCourses/discardProgramCourseValidation')
+
+  const createStudentProgramValidation = require('./validation/studentPrograms/createStudentProgramValidation')
+  const updateStudentProgramValidation = require('./validation/studentPrograms/updateStudentProgramValidation')
+  const assignStudentProgramLecturerValidation = require('./validation/studentPrograms/assignStudentProgramLecturerValidation')
+  const updateStudentProgramStatusValidation = require('./validation/studentPrograms/updateStudentProgramStatusValidation')
 
   const authMiddleware = require('./middlewares/authMiddleware')
 
@@ -105,6 +111,7 @@ module.exports = (app) => {
     validate(deleteProgramsValidation),
     programsController.destroy
   )
+  
   router.post('/programs/:programId/courses',
     validate(addProgramCourseValidation),
     programsController.addCourse
@@ -112,6 +119,23 @@ module.exports = (app) => {
   router.delete('/programs/:programId/courses/:courseId',
     validate(discardProgramCourseValidation),
     programsController.discardCourse
+  )
+
+  router.post('/programs/:programId/register',
+    validate(createStudentProgramValidation),
+    studentProgramsController.create
+  )
+  router.put('/programs/:programId/update',
+    validate(updateStudentProgramValidation),
+    studentProgramsController.update
+  )
+  router.put('/student-programs/:studentProgramId/lecturer/:lecturerId',
+    validate(assignStudentProgramLecturerValidation),
+    studentProgramsController.assignLecturer
+  )
+  router.put('/student-programs/:studentProgramId/status',
+    validate(updateStudentProgramStatusValidation),
+    studentProgramsController.updateStatus
   )
   
   router.get('/courses',
