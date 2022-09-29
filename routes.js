@@ -5,6 +5,7 @@ module.exports = (app) => {
   const agenciesController = require('./controllers/agenciesController')
   const programTypesController = require('./controllers/programTypesController')
   const programsController = require('./controllers/programsController')
+  const coursesController = require('./controllers/coursesController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -26,6 +27,8 @@ module.exports = (app) => {
   const createProgramsValidation = require('./validation/programs/createProgramsValidation')
   const updateProgramsValidation = require('./validation/programs/updateProgramsValidation')
   const deleteProgramsValidation = require('./validation/programs/deleteProgramsValidation')
+
+  const getCoursesValidation = require('./validation/courses/getCoursesValidation')
 
   const authMiddleware = require('./middlewares/authMiddleware')
 
@@ -100,5 +103,10 @@ module.exports = (app) => {
     programsController.destroy
   )
   
+  router.get('/courses',
+    validate(getCoursesValidation),
+    coursesController.index
+  )
+
   app.use('/api', router)
 }
