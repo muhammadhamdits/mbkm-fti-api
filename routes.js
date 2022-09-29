@@ -6,6 +6,7 @@ module.exports = (app) => {
   const programTypesController = require('./controllers/programTypesController')
   const programsController = require('./controllers/programsController')
   const coursesController = require('./controllers/coursesController')
+  const studentProgramsController = require('./controllers/studentProgramsController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -32,6 +33,8 @@ module.exports = (app) => {
 
   const addProgramCourseValidation = require('./validation/programCourses/addProgramCourseValidation')
   const discardProgramCourseValidation = require('./validation/programCourses/discardProgramCourseValidation')
+
+  const createStudentProgramValidation = require('./validation/studentPrograms/createStudentProgramValidation')
 
   const authMiddleware = require('./middlewares/authMiddleware')
 
@@ -113,6 +116,11 @@ module.exports = (app) => {
   router.delete('/programs/:programId/courses/:courseId',
     validate(discardProgramCourseValidation),
     programsController.discardCourse
+  )
+
+  router.post('/programs/:programId/register',
+    validate(createStudentProgramValidation),
+    studentProgramsController.create
   )
   
   router.get('/courses',
