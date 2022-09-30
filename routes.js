@@ -7,6 +7,7 @@ module.exports = (app) => {
   const programsController = require('./controllers/programsController')
   const coursesController = require('./controllers/coursesController')
   const studentProgramsController = require('./controllers/studentProgramsController')
+  const studentProgramCoursesController = require('./controllers/studentProgramCoursesController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -38,6 +39,8 @@ module.exports = (app) => {
   const updateStudentProgramValidation = require('./validation/studentPrograms/updateStudentProgramValidation')
   const assignStudentProgramLecturerValidation = require('./validation/studentPrograms/assignStudentProgramLecturerValidation')
   const updateStudentProgramStatusValidation = require('./validation/studentPrograms/updateStudentProgramStatusValidation')
+
+  const getStudentProgramCoursesValidation = require('./validation/studentProgramCourses/getStudentProgramCoursesValidation')
 
   const authMiddleware = require('./middlewares/authMiddleware')
 
@@ -129,6 +132,7 @@ module.exports = (app) => {
     validate(updateStudentProgramValidation),
     studentProgramsController.update
   )
+
   router.put('/student-programs/:studentProgramId/lecturer/:lecturerId',
     validate(assignStudentProgramLecturerValidation),
     studentProgramsController.assignLecturer
@@ -136,6 +140,11 @@ module.exports = (app) => {
   router.put('/student-programs/:studentProgramId/status',
     validate(updateStudentProgramStatusValidation),
     studentProgramsController.updateStatus
+  )
+
+  router.get('/student-programs/:studentProgramId/courses',
+    validate(getStudentProgramCoursesValidation),
+    studentProgramCoursesController.index
   )
   
   router.get('/courses',

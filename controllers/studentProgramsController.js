@@ -1,5 +1,6 @@
 const Program = require('../models').Program
 const StudentProgram = require('../models').StudentProgram
+const { authorizeUser } = require('../controllers/authController')
 
 const create = async (req, res) => {
   params = req.matchedData

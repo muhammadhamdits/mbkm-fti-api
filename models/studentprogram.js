@@ -2,30 +2,32 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-  class StudentPrograms extends Model {
+  class StudentProgram extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      StudentPrograms.belongsTo(models.Student, {
+      StudentProgram.belongsTo(models.Student, {
         foreignKey: 'studentId',
         as: 'student'
       })
       
-      StudentPrograms.belongsTo(models.Program, {
+      StudentProgram.belongsTo(models.Program, {
         foreignKey: 'programId',
         as: 'program'
       })
       
-      StudentPrograms.belongsTo(models.Lecturer, {
+      StudentProgram.belongsTo(models.Lecturer, {
         foreignKey: 'lecturerId',
         as: 'lecturer'
       })
+      
+      // student program hasmany to student program course with composite foreign key
     }
   }
-  StudentPrograms.init({
+  StudentProgram.init({
     status: DataTypes.STRING,
     acceptanceFile: DataTypes.STRING,
     completionFile: DataTypes.STRING,
@@ -33,13 +35,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     paranoid: true,
-    modelName: 'StudentPrograms',
-    indexes: [
-      {
-        unique: true,
-        fields: ['studentId', 'programId']
-      }
-    ]
+    modelName: 'StudentProgram'
   })
-  return StudentPrograms
+  
+  return StudentProgram
 }

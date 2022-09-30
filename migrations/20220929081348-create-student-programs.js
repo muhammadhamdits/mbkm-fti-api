@@ -3,11 +3,25 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('StudentPrograms', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
+      studentId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Students',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        allowNull: false
+      },
+      programId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Programs',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        allowNull: false
       },
       status: {
         type: Sequelize.STRING
@@ -32,24 +46,6 @@ module.exports = {
       deleteAt: {
         type: Sequelize.DATE
       },
-      studentId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Students',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-      },
-      programId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Programs',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-      },
       lecturerId: {
         type: Sequelize.INTEGER,
         references: {
@@ -61,8 +57,10 @@ module.exports = {
         onDelete: 'CASCADE'
       }
     }).then(() => {
-      queryInterface.addIndex('StudentPrograms', ['studentId', 'programId'], {
-        unique: true
+      queryInterface.addConstraint('StudentPrograms', {
+        fields: ['studentId', 'programId'],
+        type: 'primary key',
+        name: 'student_program_pk'
       })
     })
   },
