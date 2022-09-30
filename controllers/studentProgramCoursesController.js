@@ -94,7 +94,7 @@ const update = async (req, res) => {
     where: { studentId: params.studentId, programId: params.programId }
   })
   if(!studentProgram) return res.status(404).json({ error: 'Student program not found' })
-  if(studentProgram.lecId !== user.id) 
+  if(studentProgram.lecturerId !== user.id) 
     return res.status(401).json({ error: 'Unauthorized' })
 
   studentProgramCourses = await StudentProgramCourse.findAll({
