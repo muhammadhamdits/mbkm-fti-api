@@ -2,12 +2,22 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('ProgramCourses', {
+    await queryInterface.createTable('StudentProgramCourses', {
+      studentId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'StudentPrograms',
+          key: 'studentId'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+        allowNull: false
+      },
       programId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Programs',
-          key: 'id'
+          model: 'StudentPrograms',
+          key: 'programId'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
@@ -16,15 +26,15 @@ module.exports = {
       courseId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Courses',
-          key: 'id'
+          model: 'ProgramCourses',
+          key: 'courseId'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
         allowNull: false
       },
-      deleteAt: {
-        type: Sequelize.DATE
+      isAccepted: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -33,16 +43,19 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      deletedAt: {
+        type: Sequelize.DATE
       }
     }).then(() => {
-      queryInterface.addConstraint('ProgramCourses', {
-        fields: ['programId', 'courseId'],
+      queryInterface.addConstraint('StudentProgramCourses',{
+        fields: ['studentId', 'programId', 'courseId'],
         type: 'primary key',
-        name: 'program_course_pk'
+        name: 'student_program_course_pk'
       })
     })
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('ProgramCourses')
+    await queryInterface.dropTable('StudentProgramCourses')
   }
 }

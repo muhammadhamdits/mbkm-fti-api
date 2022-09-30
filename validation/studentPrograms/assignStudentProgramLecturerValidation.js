@@ -1,6 +1,7 @@
-const { param } = require('express-validator')
+const { body } = require('express-validator')
 
 module.exports = [
-  param('studentProgramId').isInt().notEmpty(),
-  param('lecturerId').isInt().notEmpty()
+  body('studentId').isInt().notEmpty(),
+  body('programId').isInt().notEmpty(),
+  body('lecturerId').isInt().notEmpty()
 ]
