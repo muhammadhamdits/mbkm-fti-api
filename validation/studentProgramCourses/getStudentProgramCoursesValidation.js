@@ -1,5 +1,8 @@
-const { param } = require('express-validator')
+const { query } = require('express-validator')
 
 module.exports = [
-  param('studentProgramId').isInt().notEmpty()
+  query('studentId').isInt().optional(),
+  query('programId').isInt().notEmpty(),
+  query('courseId').isInt().optional(),
+  query('isAccepted').isBoolean().optional()
 ]

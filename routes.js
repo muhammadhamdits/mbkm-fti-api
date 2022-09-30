@@ -133,16 +133,16 @@ module.exports = (app) => {
     studentProgramsController.update
   )
 
-  router.put('/student-programs/:studentProgramId/lecturer/:lecturerId',
+  router.put('/student-programs/lecturer',
     validate(assignStudentProgramLecturerValidation),
-    studentProgramsController.assignLecturer
+    studentProgramsController.update
   )
-  router.put('/student-programs/:studentProgramId/status',
+  router.put('/student-programs/status',
     validate(updateStudentProgramStatusValidation),
-    studentProgramsController.updateStatus
+    studentProgramsController.update
   )
 
-  router.get('/student-programs/:studentProgramId/courses',
+  router.get('/student-programs/courses',
     validate(getStudentProgramCoursesValidation),
     studentProgramCoursesController.index
   )
