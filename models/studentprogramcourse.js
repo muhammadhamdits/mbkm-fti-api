@@ -17,13 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     paranoid: true,
-    modelName: 'StudentProgramCourse',
-    indexes: [
-      {
-        unique: true,
-        fields: ['studentProgramId', 'courseId']
-      }
-    ]
+    modelName: 'StudentProgramCourse'
   })
 
   return StudentProgramCourse
