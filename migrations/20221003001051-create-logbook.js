@@ -42,18 +42,12 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       achievementCode: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'CourseAchievements',
-          key: 'achievementCode'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        type: Sequelize.INTEGER
       },
       studentId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'StudentProgram',
+          model: 'StudentPrograms',
           key: 'studentId'
         },
         onUpdate: 'CASCADE',
@@ -62,7 +56,7 @@ module.exports = {
       programId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'StudentProgram',
+          model: 'StudentPrograms',
           key: 'programId'
         },
         onUpdate: 'CASCADE',

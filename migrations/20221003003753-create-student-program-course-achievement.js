@@ -6,7 +6,7 @@ module.exports = {
       studentId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'StudentProgram',
+          model: 'StudentPrograms',
           key: 'studentId'
         },
         onUpdate: 'CASCADE',
@@ -15,7 +15,7 @@ module.exports = {
       programId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'StudentProgram',
+          model: 'StudentPrograms',
           key: 'programId'
         },
         onUpdate: 'CASCADE',
@@ -24,20 +24,14 @@ module.exports = {
       courseId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'CourseAchievement',
+          model: 'CourseAchievements',
           key: 'courseId'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
       achievementCode: {
-        type: Sequelize.STRING,
-        references: {
-          model: 'CourseAchievement',
-          key: 'achievementCode'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        type: Sequelize.STRING
       },
       score: {
         type: Sequelize.INTEGER
