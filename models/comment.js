@@ -1,0 +1,29 @@
+'use strict'
+const { Model } = require('sequelize')
+
+module.exports = (sequelize, DataTypes) => {
+  class Comment extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      Comment.belongsTo(models.Logbook, { 
+        foreignKey: 'logbookId',
+        as: 'logbook'
+      })
+    }
+  }
+  Comment.init({
+    text: DataTypes.STRING,
+    date: DataTypes.DATE,
+    isLecturer: DataTypes.BOOLEAN
+  }, {
+    sequelize,
+    paranoid: true,
+    modelName: 'Comment',
+  })
+
+  return Comment
+}

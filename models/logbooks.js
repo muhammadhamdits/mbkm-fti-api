@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'studentId',
         as: 'studentProgram'
       })
+
+      Logbooks.hasMany(models.Comment, {
+        foreignKey: 'logbookId',
+        as: 'comments'
+      })
     }
   }
   Logbooks.init({
