@@ -24,7 +24,7 @@ const create = async (req, res) => {
   params = req.matchedData
   user = req.decoded
 
-  authorizeUser(user, 'admin', res)
+  authorizeUser(user, ['admin'], res)
 
   course = await Course.findByPk(params.courseId)
   if (!course) res.status(404).json({ error: 'Course not found' })
@@ -38,7 +38,7 @@ const update = async (req, res) => {
   params = req.matchedData
   user = req.decoded
 
-  authorizeUser(user, 'admin', res)
+  authorizeUser(user, ['admin'], res)
 
   achievement = await CourseAchievement.findOne({
     where: {
@@ -57,7 +57,7 @@ const destroy = async (req, res) => {
   params = req.matchedData
   user = req.decoded
 
-  authorizeUser(user, 'admin', res)
+  authorizeUser(user, ['admin'], res)
 
   achievement = await CourseAchievement.findOne({
     where: {
