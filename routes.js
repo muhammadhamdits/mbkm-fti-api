@@ -10,6 +10,7 @@ module.exports = (app) => {
   const studentProgramCoursesController = require('./controllers/studentProgramCoursesController')
   const courseAchievementsController = require('./controllers/courseAchievementsController')
   const logbooksController = require('./controllers/logbooksController')
+  const studentProgramCourseAchievementsController = require('./controllers/studentProgramCourseAchievementsController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -53,6 +54,9 @@ module.exports = (app) => {
 
   const getLogbooksValidation = require('./validation/logbooks/getLogbooksValidation')
   const createLogbooksValidation = require('./validation/logbooks/createLogbooksValidation')
+
+  const getStudentProgramCourseAchievementsValidation = require('./validation/studentProgramCourseAchievements/getStudentProgramCourseAchievementsValidation')
+  const updateStudentProgramCourseAchievementsValidation = require('./validation/studentProgramCourseAchievements/updateStudentProgramCourseAchievementsValidation')
 
   const authMiddleware = require('./middlewares/authMiddleware')
 
@@ -178,6 +182,15 @@ module.exports = (app) => {
   router.post('/student-programs/:programId/logbooks',
     validate(createLogbooksValidation),
     logbooksController.create
+  )
+
+  router.get('/student-programs/:programId/course-achievements/:courseId',
+    validate(getStudentProgramCourseAchievementsValidation),
+    studentProgramCourseAchievementsController.index
+  )
+  router.put('/student-programs/:programId/course-achievements/:courseId',
+    validate(updateStudentProgramCourseAchievementsValidation),
+    studentProgramCourseAchievementsController.update
   )
   
   router.get('/courses',
