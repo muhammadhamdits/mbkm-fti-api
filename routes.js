@@ -8,6 +8,7 @@ module.exports = (app) => {
   const coursesController = require('./controllers/coursesController')
   const studentProgramsController = require('./controllers/studentProgramsController')
   const studentProgramCoursesController = require('./controllers/studentProgramCoursesController')
+  const courseAchievementsController = require('./controllers/courseAchievementsController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -31,6 +32,11 @@ module.exports = (app) => {
   const deleteProgramsValidation = require('./validation/programs/deleteProgramsValidation')
 
   const getCoursesValidation = require('./validation/courses/getCoursesValidation')
+
+  const getCourseAchievementsValidation = require('./validation/courseAchievements/getCourseAchievementsValidation')
+  const createCourseAchievementsValidation = require('./validation/courseAchievements/createCourseAchievementsValidation')
+  const updateCourseAchievementsValidation = require('./validation/courseAchievements/updateCourseAchievementsValidation')
+  const deleteCourseAchievementsValidation = require('./validation/courseAchievements/deleteCourseAchievementsValidation')
 
   const addProgramCourseValidation = require('./validation/programCourses/addProgramCourseValidation')
   const discardProgramCourseValidation = require('./validation/programCourses/discardProgramCourseValidation')
@@ -164,6 +170,23 @@ module.exports = (app) => {
   router.get('/courses',
     validate(getCoursesValidation),
     coursesController.index
+  )
+
+  router.get('/courses/:courseId/achievements',
+    validate(getCourseAchievementsValidation),
+    courseAchievementsController.index
+  )
+  router.post('/courses/:courseId/achievements',
+    validate(createCourseAchievementsValidation),
+    courseAchievementsController.create
+  )
+  router.put('/courses/:courseId/achievements',
+    validate(updateCourseAchievementsValidation),
+    courseAchievementsController.update
+  )
+  router.delete('/courses/:courseId/achievements/:achievementCode',
+    validate(deleteCourseAchievementsValidation),
+    courseAchievementsController.destroy
   )
 
   app.use('/api', router)

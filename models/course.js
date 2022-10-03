@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
         as: 'programs',
         foreignKey: 'courseId'
       })
+
+      Course.hasMany(models.CourseAchievement, {
+        foreignKey: 'courseId',
+        as: 'achievements'
+      })
     }
   }
   Course.init({

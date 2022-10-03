@@ -2,23 +2,26 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-  class StudentProgramCourse extends Model {
+  class CourseAchievement extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // Add associations here
+      CourseAchievement.belongsTo(models.Course, {
+        foreignKey: 'courseId',
+        as: 'course'
+      })
     }
   }
-  StudentProgramCourse.init({
-    isAccepted: DataTypes.BOOLEAN
+  CourseAchievement.init({
+    achievementCode: DataTypes.INTEGER,
+    title: DataTypes.STRING
   }, {
     sequelize,
-    paranoid: true,
-    modelName: 'StudentProgramCourse'
+    modelName: 'CourseAchievement',
   })
 
-  return StudentProgramCourse
+  return CourseAchievement
 }
