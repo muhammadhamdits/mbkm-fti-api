@@ -11,6 +11,7 @@ module.exports = (app) => {
   const courseAchievementsController = require('./controllers/courseAchievementsController')
   const logbooksController = require('./controllers/logbooksController')
   const studentProgramCourseAchievementsController = require('./controllers/studentProgramCourseAchievementsController')
+  const commentsController = require('./controllers/commentsController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -57,6 +58,8 @@ module.exports = (app) => {
 
   const getStudentProgramCourseAchievementsValidation = require('./validation/studentProgramCourseAchievements/getStudentProgramCourseAchievementsValidation')
   const updateStudentProgramCourseAchievementsValidation = require('./validation/studentProgramCourseAchievements/updateStudentProgramCourseAchievementsValidation')
+
+  const getCommentsValidation = require('./validation/comments/getCommentsValidation')
 
   const authMiddleware = require('./middlewares/authMiddleware')
 
@@ -213,6 +216,11 @@ module.exports = (app) => {
   router.delete('/courses/:courseId/achievements/:achievementCode',
     validate(deleteCourseAchievementsValidation),
     courseAchievementsController.destroy
+  )
+
+  router.get('/logbooks/:logbookId/comments',
+    validate(getCommentsValidation),
+    commentsController.index
   )
 
   app.use('/api', router)
