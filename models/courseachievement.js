@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING
   }, {
     sequelize,
+    paranoid: true,
     modelName: 'CourseAchievement',
   })
 
