@@ -69,6 +69,10 @@ module.exports = (app) => {
   )
 
   router.use(authMiddleware)
+
+  router.post('/decode',
+    authController.decode
+  )
   
   router.put('/fetch-users/:type',
     validate(fetchUserValidation),

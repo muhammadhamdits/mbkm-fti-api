@@ -90,6 +90,12 @@ const authorizeUser = (user, roles, res) => {
   if(!roles.includes(user.role)) return res.status(401).json({ message: 'Unauthorized' })
 }
 
+const decode = (req, res) => {
+  user = req.decoded
+
+  return res.status(200).json({ user })
+}
+
 // private functions
 
 const getUser = async (username) => {
@@ -144,5 +150,6 @@ module.exports = {
   fetchUser,
   bulkUpsertStudent,
   bulkUpsertLecturer,
-  authorizeUser
+  authorizeUser,
+  decode
 }
