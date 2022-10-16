@@ -99,9 +99,9 @@ const decode = (req, res) => {
 // private functions
 
 const getUser = async (username) => {
-  user = await Admin.findOne({ username: username })
-  if(!user) user = await Lecturer.findOne({ nip: username })
-  if(!user) user = await Student.findOne({ nim: username })
+  user = await Admin.findOne({ where: { username } })
+  if(!user) user = await Lecturer.findOne({ where: { nip: username } })
+  if(!user) user = await Student.findOne({ where: { nim: username } })
   return user
 }
 

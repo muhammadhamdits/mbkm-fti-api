@@ -22,11 +22,15 @@ module.exports = {
         allowNull: true
       },
       description: {
-        type: Sequelize.STRING(255),
+        type: Sequelize.TEXT,
         allowNull: true
       },
       field: {
         type: Sequelize.STRING(20),
+        allowNull: true
+      },
+      imageUrl: {
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       createdAt: {

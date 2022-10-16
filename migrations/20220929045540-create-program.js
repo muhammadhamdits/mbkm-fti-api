@@ -15,8 +15,8 @@ module.exports = {
       isCertified: {
         type: Sequelize.BOOLEAN
       },
-      isRemote: {
-        type: Sequelize.BOOLEAN
+      placement: {
+        type: Sequelize.STRING
       },
       startsAt: {
         type: Sequelize.DATE

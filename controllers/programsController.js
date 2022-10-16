@@ -17,6 +17,18 @@ const index = async (req, res) => {
   return res.status(200).json({ programs })
 }
 
+const show = async (req, res) => {
+  params = req.matchedData
+  user = req.decoded
+
+  program = await Program.findOne({
+    where: { id: params.id },
+    include: ['agency', 'programType']
+  })
+
+  return res.status(200).json({ program })
+}
+
 const create = async (req, res) => {
   params = req.matchedData
   user = req.decoded
@@ -121,5 +133,6 @@ module.exports = {
   update,
   destroy,
   addCourse,
-  discardCourse
+  discardCourse,
+  show
 }
