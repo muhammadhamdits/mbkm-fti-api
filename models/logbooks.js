@@ -14,11 +14,6 @@ module.exports = (sequelize, DataTypes) => {
         as: 'achievement'
       })
 
-      Logbooks.belongsTo(models.StudentProgram, {
-        foreignKey: 'studentId',
-        as: 'studentProgram'
-      })
-
       Logbooks.hasMany(models.Comment, {
         foreignKey: 'logbookId',
         as: 'comments'

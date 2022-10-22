@@ -3,4 +3,6 @@ scripts
 
 /config/config.json
 
+/public/uploads
+
 .env

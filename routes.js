@@ -12,6 +12,7 @@ module.exports = (app) => {
   const logbooksController = require('./controllers/logbooksController')
   const studentProgramCourseAchievementsController = require('./controllers/studentProgramCourseAchievementsController')
   const commentsController = require('./controllers/commentsController')
+  const filesController = require('./controllers/filesController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -61,6 +62,8 @@ module.exports = (app) => {
   const updateStudentProgramCourseAchievementsValidation = require('./validation/studentProgramCourseAchievements/updateStudentProgramCourseAchievementsValidation')
 
   const getCommentsValidation = require('./validation/comments/getCommentsValidation')
+
+  const uploadFilesValidation = require('./validation/files/uploadFilesValidation')
 
   const authMiddleware = require('./middlewares/authMiddleware')
 
@@ -230,6 +233,11 @@ module.exports = (app) => {
   router.get('/logbooks/:logbookId/comments',
     validate(getCommentsValidation),
     commentsController.index
+  )
+
+  router.post('/upload',
+    validate(uploadFilesValidation),
+    filesController.upload
   )
 
   app.use('/api', router)
