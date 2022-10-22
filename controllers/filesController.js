@@ -19,7 +19,7 @@ const upload = async (req, res) => {
   form.parse(req, async (err, fields, files) => {
     const oldPath = files.file.filepath
     const extension = files.file.originalFilename.split('.').pop()
-    const newName = `${user.id}-${files.file.newFilename}.${extension}`
+    const newName = `${user.id}-${user.role}-${files.file.newFilename}.${extension}`
     const newPath = `${__dirname}/../public/uploads/${newName}`
     mv(oldPath, newPath, async (err) => {
       if (err) res.status(500).json({ error: err })
