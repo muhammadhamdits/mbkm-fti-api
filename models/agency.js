@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     address: DataTypes.STRING,
     webUrl: DataTypes.STRING,
+    imageUrl: DataTypes.STRING,
     description: DataTypes.STRING,
     field: DataTypes.STRING
   }, {

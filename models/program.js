@@ -29,14 +29,15 @@ module.exports = (sequelize, DataTypes) => {
   Program.init({
     name: DataTypes.STRING,
     isCertified: DataTypes.BOOLEAN,
-    isRemote: DataTypes.BOOLEAN,
+    placement: DataTypes.STRING,
     startsAt: DataTypes.DATE,
     endsAt: DataTypes.DATE,
     openAt: DataTypes.DATE,
     closeAt: DataTypes.DATE,
     description: DataTypes.STRING,
     minTerms: DataTypes.INTEGER,
-    sksCount: DataTypes.INTEGER
+    sksCount: DataTypes.INTEGER,
+    status: DataTypes.STRING,
   }, {
     sequelize,
     paranoid: true,

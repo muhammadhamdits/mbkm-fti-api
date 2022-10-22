@@ -30,6 +30,7 @@ module.exports = (app) => {
   const deleteProgramTypesValidation = require('./validation/programTypes/deleteProgramTypesValidation')
 
   const getProgramsValidation = require('./validation/programs/getProgramsValidation')
+  const showProgramsValidation = require('./validation/programs/showProgramsValidation')
   const createProgramsValidation = require('./validation/programs/createProgramsValidation')
   const updateProgramsValidation = require('./validation/programs/updateProgramsValidation')
   const deleteProgramsValidation = require('./validation/programs/deleteProgramsValidation')
@@ -69,6 +70,10 @@ module.exports = (app) => {
   )
 
   router.use(authMiddleware)
+
+  router.post('/decode',
+    authController.decode
+  )
   
   router.put('/fetch-users/:type',
     validate(fetchUserValidation),
@@ -120,6 +125,10 @@ module.exports = (app) => {
   router.get('/programs',
     validate(getProgramsValidation),
     programsController.index
+  )
+  router.get('/programs/:id',
+    validate(showProgramsValidation),
+    programsController.show
   )
   router.post('/programs',
     validate(createProgramsValidation),

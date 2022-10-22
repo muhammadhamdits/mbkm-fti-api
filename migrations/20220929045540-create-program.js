@@ -15,8 +15,8 @@ module.exports = {
       isCertified: {
         type: Sequelize.BOOLEAN
       },
-      isRemote: {
-        type: Sequelize.BOOLEAN
+      placement: {
+        type: Sequelize.STRING
       },
       startsAt: {
         type: Sequelize.DATE
@@ -31,7 +31,7 @@ module.exports = {
         type: Sequelize.DATE
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       minTerms: {
         type: Sequelize.INTEGER
@@ -50,6 +50,11 @@ module.exports = {
       deletedAt: {
         type: Sequelize.DATE,
         allowNull: true
+      },
+      status: {
+        // proposed, approved, rejected
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       agencyId: {
         type: Sequelize.INTEGER,

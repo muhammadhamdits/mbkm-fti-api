@@ -9,19 +9,35 @@ const index = async (req, res) => {
   params = req.matchedData
   user = req.decoded
 
-  programs = await Program.findAll({ 
+  let programs = await Program.findAll({ 
     where: params, 
     include: ['agency', 'programType'] 
   })
 
+  if(user.role !== 'admin') programs = programs.filter(program => program.status == 'approved')
+
   return res.status(200).json({ programs })
+}
+
+const show = async (req, res) => {
+  params = req.matchedData
+  user = req.decoded
+
+  program = await Program.findOne({
+    where: { id: params.id },
+    include: ['agency', 'programType']
+  })
+
+  return res.status(200).json({ program })
 }
 
 const create = async (req, res) => {
   params = req.matchedData
   user = req.decoded
   
-  authorizeUser(user, ['admin'], res)
+  authorizeUser(user, ['admin', 'student'], res)
+  if(user.role == 'student') params.status = 'proposed'
+  else params.status = 'approved'
 
   agency = await Agency.findByPk(params.agencyId)
   if (!agency) return res.status(404).json({ message: 'Agency not found' })
@@ -30,6 +46,7 @@ const create = async (req, res) => {
   if (!programType) return res.status(404).json({ message: 'Program type not found' })
 
   program = await Program.create(params)
+  program = await Program.findByPk(program.id, { include: ['agency', 'programType'] })
 
   return res.status(200).json({ program })
 }
@@ -54,6 +71,7 @@ const update = async (req, res) => {
   }
 
   await program.update(params)
+  program = await Program.findByPk(params.id, { include: ['agency', 'programType'] })
 
   return res.status(200).json({ program })
 }
@@ -121,5 +139,6 @@ module.exports = {
   update,
   destroy,
   addCourse,
-  discardCourse
+  discardCourse,
+  show
 }
