@@ -26,6 +26,9 @@ module.exports = {
       status: {
         type: Sequelize.STRING
       },
+      advisorRecommendationFile: {
+        type: Sequelize.STRING
+      },
       acceptanceFile: {
         type: Sequelize.STRING
       },
@@ -43,7 +46,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       },
-      deleteAt: {
+      deletedAt: {
         type: Sequelize.DATE
       },
       lecturerId: {
