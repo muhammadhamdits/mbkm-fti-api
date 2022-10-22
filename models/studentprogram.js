@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   StudentProgram.init({
     status: DataTypes.STRING,
+    advisorRecommendationFile: DataTypes.STRING,
     acceptanceFile: DataTypes.STRING,
     completionFile: DataTypes.STRING,
     transcriptFile: DataTypes.STRING
@@ -37,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
     paranoid: true,
     modelName: 'StudentProgram'
   })
+  StudentProgram.removeAttribute('id')
   
   return StudentProgram
 }
