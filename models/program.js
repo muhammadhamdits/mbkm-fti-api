@@ -36,7 +36,8 @@ module.exports = (sequelize, DataTypes) => {
     closeAt: DataTypes.DATE,
     description: DataTypes.STRING,
     minTerms: DataTypes.INTEGER,
-    sksCount: DataTypes.INTEGER
+    sksCount: DataTypes.INTEGER,
+    status: DataTypes.STRING,
   }, {
     sequelize,
     paranoid: true,
