@@ -6,8 +6,11 @@ require('dotenv').config()
 
 const app = express()
 
+app.use(express.static('public'))
+app.use('/uploads', express.static('uploads'))
 app.use(cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 routes(app)
 
 app.listen(process.env.SERVER_PORT, () => {
