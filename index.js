@@ -1,21 +1,22 @@
 const cors = require('cors')
 const express = require('express')
 const routes = require('./routes')
-const authMiddleware = require('./middlewares/authMiddleware')
+const authGet = require('./middlewares/authGet')
 
 require('dotenv').config()
 
 const app = express()
 
 app.use('/uploads',
-  authMiddleware,
+  authGet,
   (req, res, next) => {
     user = req.decoded
     path = req.path
     filename = path.split('/').pop()
-    if (user.role === 'student') {
-      if (filename.includes('student') && filename.includes(user.id)) next()
-      else res.status(401).json({ message: 'Unauthorized' })
+    format = filename.split('-')
+    if (user.role == 'student') {
+      if (user.id == format[0] && user.role == format[1]) next()
+      else res.status(403).json({ message: 'Forbidden' })
     } else next()
   }
 )
