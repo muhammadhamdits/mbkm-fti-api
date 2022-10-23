@@ -2,6 +2,21 @@ const Program = require('../models').Program
 const StudentProgram = require('../models').StudentProgram
 const { authorizeUser } = require('../controllers/authController')
 
+const index = async (req, res) => {
+  user = req.decoded
+
+  if(user.role === 'student') whereParams = { studentId: user.id }
+  else if(user.role === 'lecturer') whereParams = { lecturerId: user.id }
+  else whereParams = {}
+
+  studentPrograms = await StudentProgram.findAll({
+    where: whereParams,
+    include: ['program', 'student']
+  })
+
+  return res.status(200).json({ studentPrograms })
+}
+
 const create = async (req, res) => {
   params = req.matchedData
   user = req.decoded
@@ -15,6 +30,25 @@ const create = async (req, res) => {
     studentId: user.id,
     programId: params.programId
   })
+
+  return res.status(200).json({ studentProgram })
+}
+
+const show = async (req, res) => {
+  params = req.matchedData
+  user = req.decoded
+
+  authorizeUser(user, ['student'], res)
+
+  studentProgram = await StudentProgram.findOne({
+    where: { 
+      programId: params.programId,
+      studentId: user.id
+    },
+    include: ['program']
+  })
+
+  if (!studentProgram) return res.status(404).json({ message: 'Student program not found' })
 
   return res.status(200).json({ studentProgram })
 }
@@ -43,6 +77,8 @@ const update = async (req, res) => {
 }
 
 module.exports = {
+  index,
   create,
+  show,
   update
 }
