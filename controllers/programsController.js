@@ -3,6 +3,7 @@ const Agency = require('../models').Agency
 const Course = require('../models').Course
 const ProgramType = require('../models').ProgramType
 const ProgramCourse = require('../models').ProgramCourse
+const StudentProgram = require('../models').StudentProgram
 const { authorizeUser } = require('../controllers/authController')
 
 const index = async (req, res) => {
@@ -23,12 +24,16 @@ const show = async (req, res) => {
   params = req.matchedData
   user = req.decoded
 
+  isRegistered = await StudentProgram.findOne({ where: {
+    studentId: user.id,
+    programId: params.id
+  }})
   program = await Program.findOne({
     where: { id: params.id },
     include: ['agency', 'programType']
   })
 
-  return res.status(200).json({ program })
+  return res.status(200).json({ program, isRegistered: !!isRegistered })
 }
 
 const create = async (req, res) => {
