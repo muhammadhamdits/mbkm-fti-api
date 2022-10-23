@@ -6,18 +6,11 @@ const index = async (req, res) => {
   params = req.matchedData
   user = req.decoded
 
-  course = await Course.findByPk(params.courseId, {
-    include: [
-      {
-        association: 'achievements',
-        attributes: ['achievementCode', 'title']
-      }
-    ]
-  })
+  courseAchievements = await CourseAchievement.findAll({ where: params })
 
-  if (!course) res.status(404).json({ error: 'Course not found' })
+  if (!courseAchievements) res.status(404).json({ error: 'Course not found' })
 
-  return res.status(200).json({ achievements: course.achievements })
+  return res.status(200).json({ achievements: courseAchievements })
 }
 
 const create = async (req, res) => {
@@ -35,22 +28,35 @@ const create = async (req, res) => {
 }
 
 const update = async (req, res) => {
-  params = req.matchedData
-  user = req.decoded
+  const params = req.matchedData
+  const user = req.decoded
 
   authorizeUser(user, ['admin'], res)
 
-  achievement = await CourseAchievement.findOne({
-    where: {
-      courseId: params.courseId,
-      achievementCode: params.achievementCode
+  const courseId = params.courseId
+  const titles = params.titles
+  const achievementCodes = params.achievementCodes
+  const buildData = achievementCodes.map((achievementCode, index) => {
+    return {
+      achievementCode,
+      title: titles[index],
+      courseId,
+      deletedAt: null
     }
   })
-  if (!achievement) res.status(404).json({ error: 'Achievement not found' })
 
-  achievement.update(params)
+  allCourseAchievements = await CourseAchievement.findAll({ where: { courseId } })
+  allCourseAchievementCodes = allCourseAchievements.map(ca => ca.achievementCode)
+  notInNewAchievements = allCourseAchievementCodes.filter(ac => !achievementCodes.includes(ac))
 
-  return res.status(200).json({ achievement })
+  await CourseAchievement.destroy({ where: {
+    courseId,
+    achievementCode: notInNewAchievements
+  }})
+
+  await CourseAchievement.bulkCreate(buildData, { updateOnDuplicate: ['title', 'deletedAt'] })
+  
+  return res.status(200).json({ message: 'Achievement updated' })
 }
 
 const destroy = async (req, res) => {
