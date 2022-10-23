@@ -13,7 +13,7 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       achievementCode: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       title: {
         type: Sequelize.STRING

@@ -16,13 +16,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   CourseAchievement.init({
-    achievementCode: DataTypes.INTEGER,
+    achievementCode: DataTypes.STRING,
     title: DataTypes.STRING
   }, {
     sequelize,
     paranoid: true,
     modelName: 'CourseAchievement',
   })
+  CourseAchievement.removeAttribute('id')
 
   return CourseAchievement
 }
