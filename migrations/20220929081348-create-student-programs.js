@@ -23,8 +23,10 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false
       },
+      // 'applied', 'approved', 'rejected', 'accepted'
       status: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        defaultValue: 'applied'
       },
       advisorRecommendationFile: {
         type: Sequelize.STRING
@@ -58,6 +60,9 @@ module.exports = {
         allowNull: true,
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
+      },
+      reason: {
+        type: Sequelize.STRING
       }
     }).then(() => {
       queryInterface.addConstraint('StudentPrograms', {

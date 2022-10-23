@@ -32,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
     advisorRecommendationFile: DataTypes.STRING,
     acceptanceFile: DataTypes.STRING,
     completionFile: DataTypes.STRING,
-    transcriptFile: DataTypes.STRING
+    transcriptFile: DataTypes.STRING,
+    reason: DataTypes.STRING
   }, {
     sequelize,
     paranoid: true,
