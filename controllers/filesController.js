@@ -10,6 +10,10 @@ const upload = async (req, res) => {
   user = req.decoded
   const { objectName, objectId, objectField } = params
 
+  if (objectName === 'StudentProgram' && objectField === 'acceptanceFile') {
+    acceptStudentProgram(objectId)
+  }
+
   // check auth later
 
   oldFile = await checkFile(params)
@@ -65,6 +69,11 @@ const updateObjectField = async (params, fileUrl) => {
 
 const classMap = {
   'StudentProgram': Models.StudentProgram
+}
+
+const acceptStudentProgram = async (objectId) => {
+  const studentProgram = await Models.StudentProgram.findOne({ where: JSON.parse(objectId) })
+  if (studentProgram) studentProgram.update({ status: 'accepted' })
 }
 
 module.exports = {

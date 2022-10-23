@@ -20,9 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       })
     }
   }
-  ProgramCourse.init({
-    deleteAt: DataTypes.DATE
-  }, {
+  ProgramCourse.init({}, {
     sequelize,
     paranoid: true,
     modelName: 'ProgramCourse',

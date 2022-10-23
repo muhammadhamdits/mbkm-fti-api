@@ -12,7 +12,7 @@ const index = async (req, res) => {
 
   let programs = await Program.findAll({ 
     where: params, 
-    include: ['agency', 'programType'] 
+    include: ['agency', 'programType', 'courses'] 
   })
 
   if(user.role !== 'admin') programs = programs.filter(program => program.status == 'approved')
@@ -30,7 +30,7 @@ const show = async (req, res) => {
   }})
   program = await Program.findOne({
     where: { id: params.id },
-    include: ['agency', 'programType']
+    include: ['agency', 'programType', 'courses']
   })
 
   return res.status(200).json({ program, isRegistered: !!isRegistered })
@@ -95,7 +95,7 @@ const destroy = async (req, res) => {
   return res.status(200).json({ message: 'Program deleted' })
 }
 
-const addCourse = async (req, res) => {
+const setCourses = async (req, res) => {
   params = req.matchedData
   user = req.decoded
 
@@ -108,34 +108,23 @@ const addCourse = async (req, res) => {
   if (courses.length != params.courseIds.length) 
     return res.status(404).json({ message: 'Some course not found' })
   
-  await ProgramCourse.bulkCreate(params.courseIds.map(courseId => {
-    return { programId: params.programId, courseId }
-  }))
+  allCourseIds = await Course.findAll({ attributes: ['id']})
+  allCourseIds = allCourseIds.map(course => course.id)
+  notInNewCourses = allCourseIds.filter(courseId => !params.courseIds.includes(courseId))
 
-  return res.status(200).json({ message: 'Courses added' })
-}
-
-const discardCourse = async (req, res) => {
-  params = req.matchedData
-  user = req.decoded
-
-  authorizeUser(user, ['admin'], res)
-
-  program = await Program.findByPk(params.programId)
-  if (!program) return res.status(404).json({ message: 'Program not found' })
-  
-  course = await Course.findByPk(params.courseId)
-  if (!course) return res.status(404).json({ message: 'Course not found' })
-  
-  programCourse = await ProgramCourse.findOne({ where: { 
+  currentProgramCourses = await ProgramCourse.findAll({ where: { programId: params.programId } })
+  await ProgramCourse.destroy({ where: {
     programId: params.programId,
-    courseId: params.courseId 
+    courseId: notInNewCourses
   }})
-  if (!programCourse) return res.status(404).json({ message: 'Course not found in program' })
 
-  await programCourse.destroy()
+  records = params.courseIds.map(courseId => {
+    return { programId: params.programId, courseId, deletedAt: null }
+  })
+  
+  await ProgramCourse.bulkCreate(records, { updateOnDuplicate: ['deletedAt'] })
 
-  return res.status(200).json({ message: 'Course discarded from program' })
+  return res.status(200).json({ message: 'Courses updated' })
 }
 
 module.exports = {
@@ -143,7 +132,6 @@ module.exports = {
   create,
   update,
   destroy,
-  addCourse,
-  discardCourse,
-  show
+  show,
+  setCourses
 }

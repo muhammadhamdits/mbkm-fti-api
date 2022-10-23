@@ -43,8 +43,7 @@ module.exports = (app) => {
   const updateCourseAchievementsValidation = require('./validation/courseAchievements/updateCourseAchievementsValidation')
   const deleteCourseAchievementsValidation = require('./validation/courseAchievements/deleteCourseAchievementsValidation')
 
-  const addProgramCourseValidation = require('./validation/programCourses/addProgramCourseValidation')
-  const discardProgramCourseValidation = require('./validation/programCourses/discardProgramCourseValidation')
+  const setProgramCourseValidation = require('./validation/programCourses/setProgramCourseValidation')
 
   const createStudentProgramValidation = require('./validation/studentPrograms/createStudentProgramValidation')
   const updateStudentProgramValidation = require('./validation/studentPrograms/updateStudentProgramValidation')
@@ -147,13 +146,9 @@ module.exports = (app) => {
     programsController.destroy
   )
   
-  router.post('/programs/:programId/courses',
-    validate(addProgramCourseValidation),
-    programsController.addCourse
-  )
-  router.delete('/programs/:programId/courses/:courseId',
-    validate(discardProgramCourseValidation),
-    programsController.discardCourse
+  router.put('/programs/:programId/courses',
+    validate(setProgramCourseValidation),
+    programsController.setCourses
   )
 
   router.post('/programs/:programId/register',
