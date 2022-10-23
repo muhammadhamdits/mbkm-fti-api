@@ -12,5 +12,6 @@ module.exports = [
   body('minTerms').optional().isInt(),
   body('sksCount').optional().isInt(),
   body('agencyId').isInt().optional(),
-  body('programTypeId').isInt().optional()
+  body('programTypeId').isInt().optional(),
+  body('status').optional().isIn(['approved', 'rejected'])
 ]

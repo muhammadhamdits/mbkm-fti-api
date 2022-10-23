@@ -23,7 +23,7 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false
       },
-      deleteAt: {
+      deletedAt: {
         type: Sequelize.DATE
       },
       createdAt: {
