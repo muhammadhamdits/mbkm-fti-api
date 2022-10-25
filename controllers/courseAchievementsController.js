@@ -6,75 +6,46 @@ const index = async (req, res) => {
   params = req.matchedData
   user = req.decoded
 
-  course = await Course.findByPk(params.courseId, {
-    include: [
-      {
-        association: 'achievements',
-        attributes: ['achievementCode', 'title']
-      }
-    ]
-  })
+  courseAchievements = await CourseAchievement.findAll({ where: params })
 
-  if (!course) res.status(404).json({ error: 'Course not found' })
+  if (!courseAchievements) res.status(404).json({ error: 'Course not found' })
 
-  return res.status(200).json({ achievements: course.achievements })
-}
-
-const create = async (req, res) => {
-  params = req.matchedData
-  user = req.decoded
-
-  authorizeUser(user, ['admin'], res)
-
-  course = await Course.findByPk(params.courseId)
-  if (!course) res.status(404).json({ error: 'Course not found' })
-
-  achievement = await CourseAchievement.create(params)
-
-  return res.status(201).json({ achievement })
+  return res.status(200).json({ achievements: courseAchievements })
 }
 
 const update = async (req, res) => {
-  params = req.matchedData
-  user = req.decoded
+  const params = req.matchedData
+  const user = req.decoded
 
   authorizeUser(user, ['admin'], res)
 
-  achievement = await CourseAchievement.findOne({
-    where: {
-      courseId: params.courseId,
-      achievementCode: params.achievementCode
+  const courseId = params.courseId
+  const titles = params.titles
+  const achievementCodes = params.achievementCodes
+  const buildData = achievementCodes.map((achievementCode, index) => {
+    return {
+      achievementCode,
+      title: titles[index],
+      courseId,
+      deletedAt: null
     }
   })
-  if (!achievement) res.status(404).json({ error: 'Achievement not found' })
 
-  achievement.update(params)
+  allCourseAchievements = await CourseAchievement.findAll({ where: { courseId } })
+  allCourseAchievementCodes = allCourseAchievements.map(ca => ca.achievementCode)
+  notInNewAchievements = allCourseAchievementCodes.filter(ac => !achievementCodes.includes(ac))
 
-  return res.status(200).json({ achievement })
-}
+  await CourseAchievement.destroy({ where: {
+    courseId,
+    achievementCode: notInNewAchievements
+  }})
 
-const destroy = async (req, res) => {
-  params = req.matchedData
-  user = req.decoded
-
-  authorizeUser(user, ['admin'], res)
-
-  achievement = await CourseAchievement.findOne({
-    where: {
-      courseId: params.courseId,
-      achievementCode: params.achievementCode
-    }
-  })
-  if (!achievement) res.status(404).json({ error: 'Achievement not found' })
-
-  achievement.destroy()
-
-  return res.status(200).json({ message: 'Achievement deleted' })
+  await CourseAchievement.bulkCreate(buildData, { updateOnDuplicate: ['title', 'deletedAt'] })
+  
+  return res.status(200).json({ message: 'Achievement updated' })
 }
 
 module.exports = {
   index,
-  create,
   update,
-  destroy
 }

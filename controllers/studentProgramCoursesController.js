@@ -1,6 +1,8 @@
 const StudentProgramCourse = require('../models').StudentProgramCourse
+const StudentProgram = require('../models').StudentProgram
 const Program = require('../models').Program
 const Course = require('../models').Course
+const CourseAchievement = require('../models').CourseAchievement
 const { authorizeUser } = require('./authController')
 
 const index = async (req, res) => {
@@ -11,12 +13,25 @@ const index = async (req, res) => {
 
   if(user.role === 'student') params.studentId = user.id
 
+  cpmks = await CourseAchievement.findAll()
+  
   studentProgramCourses = await StudentProgramCourse.findAll({
     where: params,
     include: ['course']
   })
 
-  return res.status(200).json({ studentProgramCourses })
+  totalSks = 0
+  studentProgramCourses = studentProgramCourses.map(studentProgramCourse => {
+    totalSks += studentProgramCourse.course.sks
+    studentProgramCourse = studentProgramCourse.toJSON()
+    studentProgramCourse.course.cpmks = cpmks.map(cpmk => {
+      if(cpmk.courseId === studentProgramCourse.course.id) return cpmk
+    })
+    studentProgramCourse.course.cpmks = studentProgramCourse.course.cpmks.filter(cpmk => cpmk)
+    return studentProgramCourse
+  })
+
+  return res.status(200).json({ studentProgramCourses, totalSks })
 }
 
 const create = async (req, res) => {
@@ -25,9 +40,11 @@ const create = async (req, res) => {
 
   authorizeUser(user, ['student'], res)
 
-  program = await Program.findByPk(params.programId)
+  program = await Program.findByPk(params.programId, { include: ['courses'] })
   if(!program) return res.status(404).json({ error: 'Program not found' })
-  if(program.studentId !== user.id) return res.status(401).json({ error: 'Unauthorized' })
+  
+  studentProgram = await StudentProgram.findOne({ programId: params.programId, studentId: user.id })
+  if(!studentProgram) return res.status(404).json({ error: 'Student program not found' })
 
   courses = await Course.findAll({
     where: { id: params.courseIds }
@@ -36,14 +53,39 @@ const create = async (req, res) => {
     return res.status(404).json({ error: 'Some course not found' })
 
   availableCourses = program.courses
-  if(!availableCourses.some(course => params.courseIds.includes(course.id)))
-  return res.status(404).json({ error: 'Some course not available' })
+  if(!availableCourses) return res.status(404).json({ error: 'No courses available' })
 
-  studentProgramCourses = await StudentProgramCourse.bulkCreate(
-    params.courseIds.map(courseId => {
-      return { studentId: user.id, programId: params.programId, courseId }
-    })
+  availableCourseIds = availableCourses.map(course => course.id)
+  if(!params.courseIds.every(courseId => availableCourseIds.includes(courseId)))
+    return res.status(404).json({ error: 'Some course not available' })
+
+  currentSks = 0
+  currentSPC = await StudentProgramCourse.findAll({
+    where: { studentId: user.id, programId: params.programId },
+    include: ['course']
+  })
+  currentSPC.forEach(spc => currentSks += spc.course.sks)
+
+  totalSks = currentSks
+  records = courses.map(course => {
+    totalSks += course.sks
+
+    return {
+      courseId: course.id,
+      studentId: user.id,
+      programId: params.programId,
+      deletedAt: null
+    }
+  })
+  
+  exceedErrMsg = 'Total SKS exceeds the limit'
+  if(totalSks > program.sksCount) return res.status(400).json({ error: exceedErrMsg })
+
+  studentProgramCourses = await StudentProgramCourse.bulkCreate(records,
+    { updateOnDuplicate: ['deletedAt', 'updatedAt'] }
   )
+
+  return res.status(200).json({ studentProgramCourses })
 }
 
 const discard = async (req, res) => {
@@ -54,7 +96,6 @@ const discard = async (req, res) => {
 
   program = await Program.findByPk(params.programId)
   if(!program) return res.status(404).json({ error: 'Program not found' })
-  if(program.studentId !== user.id) return res.status(401).json({ error: 'Unauthorized' })
 
   courses = await Course.findAll({
     where: { id: params.courseIds }

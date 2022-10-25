@@ -9,11 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Logbooks.belongsTo(models.CourseAchievement, {
-        foreignKey: 'achievementCode',
-        as: 'achievement'
-      })
-
       Logbooks.hasMany(models.Comment, {
         foreignKey: 'logbookId',
         as: 'comments'

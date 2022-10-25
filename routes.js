@@ -39,9 +39,7 @@ module.exports = (app) => {
   const getCoursesValidation = require('./validation/courses/getCoursesValidation')
 
   const getCourseAchievementsValidation = require('./validation/courseAchievements/getCourseAchievementsValidation')
-  const createCourseAchievementsValidation = require('./validation/courseAchievements/createCourseAchievementsValidation')
   const updateCourseAchievementsValidation = require('./validation/courseAchievements/updateCourseAchievementsValidation')
-  const deleteCourseAchievementsValidation = require('./validation/courseAchievements/deleteCourseAchievementsValidation')
 
   const setProgramCourseValidation = require('./validation/programCourses/setProgramCourseValidation')
 
@@ -220,17 +218,9 @@ module.exports = (app) => {
     validate(getCourseAchievementsValidation),
     courseAchievementsController.index
   )
-  router.post('/courses/:courseId/achievements',
-    validate(createCourseAchievementsValidation),
-    courseAchievementsController.create
-  )
   router.put('/courses/:courseId/achievements',
     validate(updateCourseAchievementsValidation),
     courseAchievementsController.update
-  )
-  router.delete('/courses/:courseId/achievements/:achievementCode',
-    validate(deleteCourseAchievementsValidation),
-    courseAchievementsController.destroy
   )
 
   router.get('/logbooks/:logbookId/comments',

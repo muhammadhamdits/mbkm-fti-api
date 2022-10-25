@@ -45,7 +45,13 @@ const show = async (req, res) => {
       programId: params.programId,
       studentId: user.id
     },
-    include: ['program']
+    include: [
+      {
+        model: Program,
+        as: 'program',
+        include: ['courses']
+      }
+    ]
   })
 
   if (!studentProgram) return res.status(404).json({ message: 'Student program not found' })

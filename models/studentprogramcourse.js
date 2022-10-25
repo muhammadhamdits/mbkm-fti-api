@@ -9,16 +9,30 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // Add associations here
+      StudentProgramCourse.belongsTo(models.Course, {
+        foreignKey: 'courseId',
+        as: 'course'
+      })
+
+      StudentProgramCourse.belongsTo(models.Student, {
+        foreignKey: 'studentId',
+        as: 'student'
+      })
+
+      StudentProgramCourse.belongsTo(models.Program, {
+        foreignKey: 'programId',
+        as: 'program'
+      })
     }
   }
   StudentProgramCourse.init({
-    isAccepted: DataTypes.BOOLEAN
+    status: DataTypes.STRING
   }, {
     sequelize,
     paranoid: true,
     modelName: 'StudentProgramCourse'
   })
+  StudentProgramCourse.removeAttribute('id')
 
   return StudentProgramCourse
 }
