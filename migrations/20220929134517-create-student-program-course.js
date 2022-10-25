@@ -33,8 +33,10 @@ module.exports = {
         onDelete: 'CASCADE',
         allowNull: false
       },
-      isAccepted: {
-        type: Sequelize.BOOLEAN
+      // proposed, accepted, rejected
+      status: {
+        type: Sequelize.STRING,
+        defaultValue: 'proposed'
       },
       createdAt: {
         allowNull: false,
