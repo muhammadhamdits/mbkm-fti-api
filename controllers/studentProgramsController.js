@@ -11,7 +11,7 @@ const index = async (req, res) => {
 
   studentPrograms = await StudentProgram.findAll({
     where: whereParams,
-    include: ['program', 'student']
+    include: ['program', 'student', 'lecturer']
   })
 
   return res.status(200).json({ studentPrograms })
@@ -38,25 +38,29 @@ const show = async (req, res) => {
   params = req.matchedData
   user = req.decoded
 
-  authorizeUser(user, ['student'], res)
+  const auth = authorizeUser(user, ['student', 'admin', 'lecturer'], res)
+  if(auth && auth.status) return auth
+
+  if(user.role === 'student') studentId = user.id
+  else studentId = params.studentId
 
   studentProgram = await StudentProgram.findOne({
     where: { 
       programId: params.programId,
-      studentId: user.id
+      studentId
     },
     include: [
       {
         model: Program,
         as: 'program',
         include: ['courses']
-      }
+      },
+      'lecturer'
     ]
   })
 
   if (!studentProgram) return res.status(404).json({ message: 'Student program not found' })
-
-  return res.status(200).json({ studentProgram })
+  else return res.status(200).json({ studentProgram })
 }
 
 const update = async (req, res) => {
