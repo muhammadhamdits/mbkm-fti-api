@@ -61,6 +61,11 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
+      },
+      // proposed, accepted, rejected
+      status: {
+        type: Sequelize.STRING,
+        defaultValue: 'proposed'
       }
     })
   },
