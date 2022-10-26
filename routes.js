@@ -13,6 +13,7 @@ module.exports = (app) => {
   const studentProgramCourseAchievementsController = require('./controllers/studentProgramCourseAchievementsController')
   const commentsController = require('./controllers/commentsController')
   const filesController = require('./controllers/filesController')
+  const usersController = require('./controllers/usersController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -231,6 +232,10 @@ module.exports = (app) => {
   router.post('/upload',
     validate(uploadFilesValidation),
     filesController.upload
+  )
+
+  router.get('/lecturers',
+    usersController.getLecturers
   )
 
   app.use('/api', router)
