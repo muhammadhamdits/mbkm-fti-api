@@ -131,24 +131,25 @@ const update = async (req, res) => {
   if(courses.length !== params.courseIds.length)
     return res.status(404).json({ error: 'Some course not found' })
 
-  studentProgram = await StudentProgramCourse.findOne({
+  studentProgram = await StudentProgram.findOne({
     where: { studentId: params.studentId, programId: params.programId }
   })
   if(!studentProgram) return res.status(404).json({ error: 'Student program not found' })
   if(studentProgram.lecturerId !== user.id) 
     return res.status(401).json({ error: 'Unauthorized' })
 
+  const whereParams = { 
+    studentId: params.studentId, 
+    programId: params.programId, 
+    courseId: params.courseIds 
+  }
   studentProgramCourses = await StudentProgramCourse.findAll({
-    where: { 
-      studentId: params.studentId, 
-      programId: params.programId, 
-      courseId: params.courseIds 
-    }
+    where: whereParams
   })
   if(studentProgramCourses.length !== params.courseIds.length)
     return res.status(404).json({ error: 'Some course not found' })
   
-  await studentProgramCourses.update({ isAccepted: params.isAccepted })
+  await StudentProgramCourse.update({ status: params.status }, { where: whereParams })
 
   return res.status(200).json({ message: 'Courses updated' })
 }
