@@ -56,11 +56,14 @@ module.exports = (app) => {
 
   const getLogbooksValidation = require('./validation/logbooks/getLogbooksValidation')
   const createLogbooksValidation = require('./validation/logbooks/createLogbooksValidation')
+  const showLogbooksValidation = require('./validation/logbooks/showLogbooksValidation')
+  const updateLogbooksValidation = require('./validation/logbooks/updateLogbooksValidation')
 
   const getStudentProgramCourseAchievementsValidation = require('./validation/studentProgramCourseAchievements/getStudentProgramCourseAchievementsValidation')
   const updateStudentProgramCourseAchievementsValidation = require('./validation/studentProgramCourseAchievements/updateStudentProgramCourseAchievementsValidation')
 
   const getCommentsValidation = require('./validation/comments/getCommentsValidation')
+  const createCommentsValidation = require('./validation/comments/createCommentsValidation')
 
   const uploadFilesValidation = require('./validation/files/uploadFilesValidation')
 
@@ -191,7 +194,15 @@ module.exports = (app) => {
     validate(updateStudentProgramCoursesValidation),
     studentProgramCoursesController.update
   )
-
+  
+  router.get('/logbooks/:id',
+    validate(showLogbooksValidation),
+    logbooksController.show
+  )
+  router.put('/logbooks/:id',
+    validate(updateLogbooksValidation),
+    logbooksController.update
+  )
   router.get('/student-programs/:programId/logbooks',
     validate(getLogbooksValidation),
     logbooksController.index
@@ -227,6 +238,10 @@ module.exports = (app) => {
   router.get('/logbooks/:logbookId/comments',
     validate(getCommentsValidation),
     commentsController.index
+  )
+  router.post('/logbooks/:logbookId/comments',
+    validate(createCommentsValidation),
+    commentsController.create
   )
 
   router.post('/upload',
