@@ -146,7 +146,7 @@ const update = async (req, res) => {
   studentProgramCourses = await StudentProgramCourse.findAll({
     where: whereParams
   })
-  if(studentProgramCourses.length !== params.courseIds.length)
+  if(studentProgramCourses?.length !== params.courseIds?.length)
     return res.status(404).json({ error: 'Some course not found' })
   
   await StudentProgramCourse.update({ status: params.status }, { where: whereParams })
