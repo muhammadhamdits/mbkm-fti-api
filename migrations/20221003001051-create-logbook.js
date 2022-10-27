@@ -42,7 +42,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       achievementCode: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       studentId: {
         type: Sequelize.INTEGER,
