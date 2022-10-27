@@ -42,7 +42,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       achievementCode: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       studentId: {
         type: Sequelize.INTEGER,
@@ -61,6 +61,15 @@ module.exports = {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
+      },
+      // proposed, accepted, rejected
+      status: {
+        type: Sequelize.STRING,
+        defaultValue: 'proposed'
+      },
+      reason: {
+        type: Sequelize.STRING,
+        defaultValue: ''
       }
     })
   },

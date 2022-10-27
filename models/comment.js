@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Comment.init({
     text: DataTypes.STRING,
-    date: DataTypes.DATE,
     isLecturer: DataTypes.BOOLEAN
   }, {
     sequelize,

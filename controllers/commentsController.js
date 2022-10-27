@@ -1,4 +1,4 @@
-const Logbook = require('../models').Logbook
+const Logbook = require('../models').Logbooks
 const Comment = require('../models').Comment
 const StudentProgram = require('../models').StudentProgram
 const { authorizeUser } = require('../controllers/authController')
@@ -52,7 +52,6 @@ const create = async (req, res) => {
     else params.isLecturer = true
   }
 
-  params.date = new Date()
   comment = await Comment.create(params)
 
   return res.status(201).json({ comment })
