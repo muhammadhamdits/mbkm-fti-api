@@ -66,6 +66,10 @@ module.exports = {
       status: {
         type: Sequelize.STRING,
         defaultValue: 'proposed'
+      },
+      reason: {
+        type: Sequelize.STRING,
+        defaultValue: ''
       }
     })
   },

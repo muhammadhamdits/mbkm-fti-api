@@ -29,7 +29,10 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     startsAt: DataTypes.DATE,
     endsAt: DataTypes.DATE,
-    description: DataTypes.STRING
+    description: DataTypes.STRING,
+    status: DataTypes.STRING,
+    achievementCode: DataTypes.STRING,
+    reason: DataTypes.STRING
   }, {
     sequelize,
     paranoid: true,

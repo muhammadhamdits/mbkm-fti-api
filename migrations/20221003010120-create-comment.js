@@ -12,9 +12,6 @@ module.exports = {
       text: {
         type: Sequelize.STRING
       },
-      date: {
-        type: Sequelize.DATE
-      },
       isLecturer: {
         type: Sequelize.BOOLEAN
       },
