@@ -1,4 +1,5 @@
 const Logbook = require('../models').Logbooks
+const CourseAchievement = require('../models').CourseAchievement
 const { authorizeUser } = require('../controllers/authController')
 
 const index = async (req, res) => {
@@ -13,7 +14,8 @@ const index = async (req, res) => {
     where: {
       studentId,
       programId: params.programId
-    }
+    },
+    include: ['course']
   })
 
   res.status(200).json({ logbooks })
@@ -39,9 +41,16 @@ const show = async (req, res) => {
 
   logbook = await Logbook.findOne({ 
     where: { id: params.id },
-    include: ['comments']
+    include: ['comments', 'course']
   })
   if(!logbook) return res.status(404).json({ error: 'No logbook found with id provided' })
+
+  cpmks = await CourseAchievement.findAll({ where: { courseId: logbook.courseId } })
+
+  logbook = logbook.toJSON()
+  logbook.course.cpmks = cpmks.map(cpmk => {
+    if(cpmk.courseId === logbook.course.id) return cpmk
+  }).filter(cpmk => cpmk)
 
   return res.status(200).json({ logbook })
 }
@@ -57,6 +66,16 @@ const update = async (req, res) => {
   if(!logbook) return res.status(404).json({ error: 'No logbook found with id provided' })
 
   logbook = await logbook.update(params)
+  logbook = await Logbook.findOne({ 
+    where: { id: logbook.id },
+    include: ['comments', 'course']
+  })
+  cpmks = await CourseAchievement.findAll({ where: { courseId: logbook.courseId } })
+
+  logbook = logbook.toJSON()
+  logbook.course.cpmks = cpmks.map(cpmk => {
+    if(cpmk.courseId === logbook.course.id) return cpmk
+  }).filter(cpmk => cpmk)
 
   return res.status(200).json({ logbook })
 }
