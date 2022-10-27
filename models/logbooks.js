@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'programId',
         as: 'program'
       })
+
+      Logbooks.belongsTo(models.Course, {
+        foreignKey: 'courseId',
+        as: 'course'
+      })
     }
   }
   Logbooks.init({
