@@ -20,19 +20,17 @@ module.exports = (sequelize, DataTypes) => {
       StudentProgramCourseAchievement.belongsTo(models.Course,
         { foreignKey: 'courseId', as: 'course' }
       )
-      
-      StudentProgramCourseAchievement.belongsTo(models.CourseAchievement,
-        { foreignKey: 'achievementCode', as: 'courseAchievement' }
-      )
     }
   }
   StudentProgramCourseAchievement.init({
-    score: DataTypes.INTEGER
+    score: DataTypes.INTEGER,
+    achievementCode: DataTypes.STRING
   }, {
     sequelize,
     paranoid: true,
     modelName: 'StudentProgramCourseAchievement',
   })
+  StudentProgramCourseAchievement.removeAttribute('id')
   
   return StudentProgramCourseAchievement
 }
