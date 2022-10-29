@@ -37,6 +37,9 @@ module.exports = {
       completionFile: {
         type: Sequelize.STRING
       },
+      posterFile: {
+        type: Sequelize.STRING
+      },
       transcriptFile: {
         type: Sequelize.STRING
       },

@@ -21,11 +21,13 @@ const update = async (req, res) => {
 
   const courseId = params.courseId
   const titles = params.titles
+  const weights = params.weights
   const achievementCodes = params.achievementCodes
   const buildData = achievementCodes.map((achievementCode, index) => {
     return {
       achievementCode,
       title: titles[index],
+      weight: weights[index],
       courseId,
       deletedAt: null
     }
