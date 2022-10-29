@@ -3,6 +3,7 @@ const StudentProgram = require('../models').StudentProgram
 const Program = require('../models').Program
 const Course = require('../models').Course
 const CourseAchievement = require('../models').CourseAchievement
+const StudentProgramCourseAchievement = require('../models').StudentProgramCourseAchievement
 const { authorizeUser } = require('./authController')
 
 const index = async (req, res) => {
@@ -14,6 +15,18 @@ const index = async (req, res) => {
   if(user.role === 'student') params.studentId = user.id
 
   cpmks = await CourseAchievement.findAll()
+  spcas = await StudentProgramCourseAchievement.findAll({
+    where: {
+      studentId: params.studentId,
+      programId: params.programId
+    }
+  })
+
+  spcas = spcas?.map(spca => {
+    spca = spca.toJSON()
+    spca.cpmk = cpmks.find(cpmk => cpmk.achievementCode === spca.achievementCode && cpmk.courseId === spca.courseId)
+    return spca
+  })
   
   studentProgramCourses = await StudentProgramCourse.findAll({
     where: params,
@@ -24,10 +37,17 @@ const index = async (req, res) => {
   studentProgramCourses = studentProgramCourses.map(studentProgramCourse => {
     totalSks += studentProgramCourse.course.sks
     studentProgramCourse = studentProgramCourse.toJSON()
-    studentProgramCourse.course.cpmks = cpmks.map(cpmk => {
+    studentProgramCourse.course.cpmks = spcas?.map(cpmk => {
       if(cpmk.courseId === studentProgramCourse.course.id) return cpmk
     })
     studentProgramCourse.course.cpmks = studentProgramCourse.course.cpmks.filter(cpmk => cpmk)
+    let score = 0
+    studentProgramCourse.course.cpmks.forEach(cpmk => {
+      cpmkScore = cpmk.score * cpmk.cpmk.weight
+      score += cpmkScore
+    })
+    
+    studentProgramCourse.score = score/100
     return studentProgramCourse
   })
 
@@ -82,6 +102,30 @@ const create = async (req, res) => {
   if(totalSks > program.sksCount) return res.status(400).json({ error: exceedErrMsg })
 
   studentProgramCourses = await StudentProgramCourse.bulkCreate(records,
+    { updateOnDuplicate: ['deletedAt', 'updatedAt'] }
+  )
+
+  await StudentProgramCourseAchievement.destroy({
+    where: { studentId: user.id, programId: params.programId, courseId: params.courseIds }
+  })
+  
+  promises = studentProgramCourses.map(async (studentProgramCourse) => {
+    records = []
+    cpmks = await CourseAchievement.findAll({ where: { courseId: studentProgramCourse.courseId } })
+    cpmks.forEach(cpmk => {
+      records.push({
+        studentId: user.id,
+        programId: params.programId,
+        courseId: studentProgramCourse.courseId,
+        achievementCode: cpmk.achievementCode,
+        deletedAt: null
+      })
+    })
+    return [...records]
+  })
+  records = await Promise.all(promises)
+  records = records.flat()
+  await StudentProgramCourseAchievement.bulkCreate(records,
     { updateOnDuplicate: ['deletedAt', 'updatedAt'] }
   )
 

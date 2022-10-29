@@ -9,16 +9,28 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      StudentProgramCourseAchievement.belongsTo(models.Student,
+        { foreignKey: 'studentId', as: 'student' }
+      )
+      
+      StudentProgramCourseAchievement.belongsTo(models.Program,
+        { foreignKey: 'programId', as: 'program' }
+      )
+      
+      StudentProgramCourseAchievement.belongsTo(models.Course,
+        { foreignKey: 'courseId', as: 'course' }
+      )
     }
   }
   StudentProgramCourseAchievement.init({
-    score: DataTypes.INTEGER
+    score: DataTypes.INTEGER,
+    achievementCode: DataTypes.STRING
   }, {
     sequelize,
     paranoid: true,
     modelName: 'StudentProgramCourseAchievement',
   })
+  StudentProgramCourseAchievement.removeAttribute('id')
   
   return StudentProgramCourseAchievement
 }

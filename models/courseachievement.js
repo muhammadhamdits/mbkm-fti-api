@@ -17,7 +17,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   CourseAchievement.init({
     achievementCode: DataTypes.STRING,
-    title: DataTypes.STRING
+    title: DataTypes.STRING,
+    weight: DataTypes.INTEGER
   }, {
     sequelize,
     paranoid: true,
