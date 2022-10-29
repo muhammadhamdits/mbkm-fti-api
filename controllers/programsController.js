@@ -116,7 +116,7 @@ const update = async (req, res) => {
       return {
         userId: studentId,
         userRole: 'student',
-        title: 'Program diubah',
+        title: `Program ${params.status == 'approved' ? 'disetujui' : 'ditolak'}`,
         message: `Usulan program ${program.name} telah ${params.status == 'approved' ? 'disetujui' : 'ditolak'}`,
         path: `/programs/${program.id}`
       }
