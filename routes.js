@@ -14,6 +14,7 @@ module.exports = (app) => {
   const commentsController = require('./controllers/commentsController')
   const filesController = require('./controllers/filesController')
   const usersController = require('./controllers/usersController')
+  const notificationsController = require('./controllers/notificationsController')
   
   const validate = require('./validation/validate')
   const loginValidation = require('./validation/auths/loginValidation')
@@ -249,9 +250,10 @@ module.exports = (app) => {
     filesController.upload
   )
 
-  router.get('/lecturers',
-    usersController.getLecturers
-  )
+  router.get('/lecturers', usersController.getLecturers)
+
+  router.get('/notifications', notificationsController.index)
+  router.put('/notifications/:id', notificationsController.update)
 
   app.use('/api', router)
 }
