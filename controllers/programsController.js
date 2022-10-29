@@ -1,6 +1,8 @@
 const Program = require('../models').Program
 const Agency = require('../models').Agency
 const Course = require('../models').Course
+const Student = require('../models').Student
+const Notification = require('../models').Notification
 const ProgramType = require('../models').ProgramType
 const ProgramCourse = require('../models').ProgramCourse
 const StudentProgram = require('../models').StudentProgram
@@ -52,6 +54,19 @@ const create = async (req, res) => {
 
   program = await Program.create(params)
   program = await Program.findByPk(program.id, { include: ['agency', 'programType'] })
+
+  studentIds = await Student.findAll({ attributes: ['id'] })
+  studentIds = studentIds.map(student => student.id)
+  records = studentIds.map(studentId => {
+    return {
+      userId: studentId,
+      userRole: 'student',
+      title: 'Program ditambahkan',
+      message: `Program ${program.name} telah ditambahkan`,
+      path: `/programs/${program.id}`
+    }
+  })
+  await Notification.bulkCreate(records)
 
   return res.status(200).json({ program })
 }
