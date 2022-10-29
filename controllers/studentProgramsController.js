@@ -99,6 +99,19 @@ const update = async (req, res) => {
   
   studentProgram = await studentProgram.update(params)
 
+  if(user.role === 'admin'){
+    program = await Program.findByPk(params.programId)
+    let records = []
+    records.push({
+      userId: studentId,
+      userRole: 'student',
+      title: 'Status program',
+      message: `Pendaftaran program ${program.name} telah ${params.status === 'approved' ? 'diterima' : 'ditolak'}`,
+      path: `/my-programs/${params.programId}`
+    })
+    await Notification.bulkCreate(records)
+  }
+
   return res.status(200).json({ studentProgram })
 }
 
