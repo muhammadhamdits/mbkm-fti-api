@@ -4,6 +4,7 @@ const Program = require('../models').Program
 const Course = require('../models').Course
 const CourseAchievement = require('../models').CourseAchievement
 const Notification = require('../models').Notification
+const Logbook = require('../models').Logbooks
 const StudentProgramCourseAchievement = require('../models').StudentProgramCourseAchievement
 const { authorizeUser } = require('./authController')
 
@@ -34,23 +35,43 @@ const index = async (req, res) => {
     include: ['course']
   })
 
-  totalSks = 0
-  studentProgramCourses = studentProgramCourses.map(studentProgramCourse => {
+  let totalSks = 0
+  promises = studentProgramCourses.map(async (studentProgramCourse) => {
+    let timeNeeded = studentProgramCourse.course.sks * 170 * 60 * 1000 * 16
     totalSks += studentProgramCourse.course.sks
+    let score = 0
+    let progress = 0
+
     studentProgramCourse = studentProgramCourse.toJSON()
     studentProgramCourse.course.cpmks = spcas?.map(cpmk => {
       if(cpmk.courseId === studentProgramCourse.course.id) return cpmk
     })
+
     studentProgramCourse.course.cpmks = studentProgramCourse.course.cpmks.filter(cpmk => cpmk)
-    let score = 0
     studentProgramCourse.course.cpmks.forEach(cpmk => {
       cpmkScore = cpmk.score * cpmk.cpmk.weight
       score += cpmkScore
     })
-    
     studentProgramCourse.score = score/100
+
+    logbooks = await Logbook.findAll({
+      where: {
+        studentId: params.studentId,
+        programId: params.programId,
+        courseId: studentProgramCourse.course.id
+      }
+    })
+    logbooks.forEach(logbook => {
+      logbookTime = logbook.endsAt - logbook.startsAt
+      progress += logbookTime
+    })
+    studentProgramCourse.progress = progress
+    studentProgramCourse.timeNeeded = timeNeeded
+
     return studentProgramCourse
   })
+  
+  studentProgramCourses = await Promise.all(promises)
 
   return res.status(200).json({ studentProgramCourses, totalSks })
 }
@@ -135,8 +156,8 @@ const create = async (req, res) => {
   await Notification.create({
     userId: studentProgram.lecturerId,
     userRole: 'lecturer',
-    title: 'Mahasiswa mengatur ulang konversi mata kuliah',
-    message: `Mahasiswa ${user.name} mengatur ulang konversi mata kuliah pada program ${program.name}`,
+    title: 'Mahasiswa menambah konversi mata kuliah',
+    message: `Mahasiswa ${user.name} menambah konversi mata kuliah pada program ${program.name}`,
     path: `/student-programs/${studentProgram.programId}/${studentProgram.studentId}`
   })
 
@@ -205,6 +226,14 @@ const update = async (req, res) => {
     return res.status(404).json({ error: 'Some course not found' })
   
   await StudentProgramCourse.update({ status: params.status }, { where: whereParams })
+
+  await Notification.create({
+    userId: params.studentId,
+    userRole: 'student',
+    title: `Konversi mata kuliah ${params.status === 'accepted' ? 'disetujui' : 'ditolak'}`,
+    message: `Konversi mata kuliah pada program ${program.name} ${params.status === 'accepted' ? 'disetujui' : 'ditolak'}`,
+    path: `/my-programs/${studentProgram.programId}`
+  })
 
   return res.status(200).json({ message: 'Courses updated' })
 }
