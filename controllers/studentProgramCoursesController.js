@@ -3,6 +3,7 @@ const StudentProgram = require('../models').StudentProgram
 const Program = require('../models').Program
 const Course = require('../models').Course
 const CourseAchievement = require('../models').CourseAchievement
+const Notification = require('../models').Notification
 const StudentProgramCourseAchievement = require('../models').StudentProgramCourseAchievement
 const { authorizeUser } = require('./authController')
 
@@ -63,7 +64,9 @@ const create = async (req, res) => {
   program = await Program.findByPk(params.programId, { include: ['courses'] })
   if(!program) return res.status(404).json({ error: 'Program not found' })
   
-  studentProgram = await StudentProgram.findOne({ programId: params.programId, studentId: user.id })
+  studentProgram = await StudentProgram.findOne({ where: {
+    programId: params.programId, studentId: user.id
+  }})
   if(!studentProgram) return res.status(404).json({ error: 'Student program not found' })
 
   courses = await Course.findAll({
@@ -128,6 +131,14 @@ const create = async (req, res) => {
   await StudentProgramCourseAchievement.bulkCreate(records,
     { updateOnDuplicate: ['deletedAt', 'updatedAt'] }
   )
+
+  await Notification.create({
+    userId: studentProgram.lecturerId,
+    userRole: 'lecturer',
+    title: 'Mahasiswa mengatur ulang konversi mata kuliah',
+    message: `Mahasiswa ${user.name} mengatur ulang konversi mata kuliah pada program ${program.name}`,
+    path: `/student-programs/${studentProgram.programId}/${studentProgram.studentId}`
+  })
 
   return res.status(200).json({ studentProgramCourses })
 }
