@@ -17,7 +17,8 @@ module.exports = (sequelize, DataTypes) => {
     userRole: DataTypes.STRING,
     title: DataTypes.STRING,
     message: DataTypes.STRING,
-    isRead: DataTypes.BOOLEAN
+    isRead: DataTypes.BOOLEAN,
+    path: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Notification',
