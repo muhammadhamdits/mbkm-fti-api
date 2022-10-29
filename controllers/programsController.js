@@ -2,6 +2,7 @@ const Program = require('../models').Program
 const Agency = require('../models').Agency
 const Course = require('../models').Course
 const Student = require('../models').Student
+const Admin = require('../models').Admin
 const Notification = require('../models').Notification
 const ProgramType = require('../models').ProgramType
 const ProgramCourse = require('../models').ProgramCourse
@@ -55,17 +56,32 @@ const create = async (req, res) => {
   program = await Program.create(params)
   program = await Program.findByPk(program.id, { include: ['agency', 'programType'] })
 
-  studentIds = await Student.findAll({ attributes: ['id'] })
-  studentIds = studentIds.map(student => student.id)
-  records = studentIds.map(studentId => {
-    return {
-      userId: studentId,
-      userRole: 'student',
-      title: 'Program ditambahkan',
-      message: `Program ${program.name} telah ditambahkan`,
-      path: `/programs/${program.id}`
-    }
-  })
+  let records = []
+  if(user.role !== 'student'){
+    studentIds = await Student.findAll({ attributes: ['id'] })
+    studentIds = studentIds.map(student => student.id)
+    records = studentIds.map(studentId => {
+      return {
+        userId: studentId,
+        userRole: 'student',
+        title: 'Program ditambahkan',
+        message: `Program ${program.name} telah ditambahkan`,
+        path: `/programs/${program.id}`
+      }
+    })
+  }else{
+    adminIds = await Admin.findAll({ attributes: ['id'] })
+    adminIds = adminIds.map(admin => admin.id)
+    records = adminIds.map(adminId => {
+      return {
+        userId: adminId,
+        userRole: 'admin',
+        title: 'Program diusulkan',
+        message: `Program ${program.name} telah diusulkan oleh ${user.name}`,
+        path: `/programs`
+      }
+    })
+  }
   await Notification.bulkCreate(records)
 
   return res.status(200).json({ program })
@@ -92,6 +108,21 @@ const update = async (req, res) => {
 
   await program.update(params)
   program = await Program.findByPk(params.id, { include: ['agency', 'programType'] })
+
+  if(params.status){
+    studentIds = await Student.findAll({ attributes: ['id'] })
+    studentIds = studentIds.map(student => student.id)
+    records = studentIds.map(studentId => {
+      return {
+        userId: studentId,
+        userRole: 'student',
+        title: 'Program diubah',
+        message: `Usulan program ${program.name} telah ${params.status == 'approved' ? 'disetujui' : 'ditolak'}`,
+        path: `/programs/${program.id}`
+      }
+    })
+    await Notification.bulkCreate(records)
+  }
 
   return res.status(200).json({ program })
 }
