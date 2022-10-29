@@ -18,20 +18,32 @@ const update = async (req, res) => {
 
   authorizeUser(user, ['lecturer'], res)
 
-  studentProgramCourseAchievement = await StudentProgramCourseAchievement.findOne({where: params })
-  if(!studentProgramCourseAchievement) 
-    return res.status(404).json({ message: 'StudentProgramCourseAchievement not found' })
-
-  studentProgram = await StudentProgram.findOne({where: { 
+  scores = params.scores
+  achievementCodes = params.achievementCodes
+  whereParams = {
     studentId: params.studentId,
-    programId: params.programId 
-  } })
-  if(studentProgram.lecturerId != user.id)
-    return res.status(403).json({ message: 'You are not authorized to update this StudentProgramCourseAchievement' })
+    programId: params.programId,
+    courseId: params.courseId,
+    achievementCode: achievementCodes
+  }
+  studentProgramCourseAchievements = await StudentProgramCourseAchievement.findAll({ where: whereParams })
 
-    studentProgramCourseAchievement.update(params)
+  if(studentProgramCourseAchievements.length !== params.achievementCodes.length)
+    return res.status(404).json({ message: 'Some achievement not found' })
 
-  return res.status(200).json({ studentProgramCourseAchievement })
+  records = achievementCodes.map((achievementCode, index) => {
+    return {
+      studentId: params.studentId,
+      programId: params.programId,
+      courseId: params.courseId,
+      achievementCode,
+      score: scores[index]
+    }
+  })
+
+  await StudentProgramCourseAchievement.bulkCreate(records, { updateOnDuplicate: ['score', 'updatedAt'] })
+
+  return res.status(200).json({ message: 'Scores updated' })
 }
 
 module.exports = {
