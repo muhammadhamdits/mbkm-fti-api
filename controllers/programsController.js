@@ -170,6 +170,19 @@ const setCourses = async (req, res) => {
   
   await ProgramCourse.bulkCreate(records, { updateOnDuplicate: ['deletedAt'] })
 
+  programStudents = await StudentProgram.findAll({ where: { programId: params.programId } })
+  programStudentIds = programStudents.map(student => student.studentId)
+  records = programStudentIds.map(studentId => {
+    return {
+      userId: studentId,
+      userRole: 'student',
+      title: 'Mata kuliah program diatur ulang',
+      message: `Mata kuliah program ${program.name} telah diatur ulang`,
+      path: `/my-programs/${program.id}`
+    }
+  })
+  await Notification.bulkCreate(records)
+
   return res.status(200).json({ message: 'Courses updated' })
 }
 
