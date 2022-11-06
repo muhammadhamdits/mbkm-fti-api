@@ -250,6 +250,7 @@ module.exports = (app) => {
     filesController.upload
   )
 
+  router.get('/users', usersController.index)
   router.get('/lecturers', usersController.getLecturers)
 
   router.get('/notifications', notificationsController.index)
