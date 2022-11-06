@@ -55,7 +55,7 @@ const create = async (req, res) => {
   if (!programType) return res.status(404).json({ message: 'Program type not found' })
 
   program = await Program.create(params)
-  program = await Program.findByPk(program.id, { include: ['agency', 'programType'] })
+  program = await Program.findByPk(program.id, { include: ['agency', 'programType', 'courses'] })
 
   let records = []
   if(user.role !== 'student'){
