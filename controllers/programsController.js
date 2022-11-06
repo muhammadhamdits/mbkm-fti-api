@@ -36,7 +36,8 @@ const show = async (req, res) => {
     include: ['agency', 'programType', 'courses']
   })
 
-  return res.status(200).json({ program, isRegistered: !!isRegistered })
+  if(!program) return res.status(404).json({ message: 'Program not found' })
+  else return res.status(200).json({ program, isRegistered: !!isRegistered })
 }
 
 const create = async (req, res) => {
