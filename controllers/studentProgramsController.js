@@ -1,5 +1,6 @@
 const Program = require('../models').Program
 const Admin = require('../models').Admin
+const Student = require('../models').Student
 const Notification = require('../models').Notification
 const StudentProgram = require('../models').StudentProgram
 const { authorizeUser } = require('../controllers/authController')
@@ -27,6 +28,13 @@ const create = async (req, res) => {
 
   program = await Program.findByPk(params.programId)
   if (!program) return res.status(404).json({ message: 'Program not found' })
+
+  student = await Student.findByPk(user.id)
+  if(program.minTerms > getTerm(student)) 
+    return res.status(400).json({ message: 'Minimum term not reached' })
+
+  if(await getQuota(student) >= 1)
+    return res.status(400).json({ message: 'Quota exceeded' })
 
   studentProgram = await StudentProgram.create({
     studentId: user.id,
@@ -123,6 +131,27 @@ const update = async (req, res) => {
   await Notification.bulkCreate(records)
 
   return res.status(200).json({ studentProgram })
+}
+
+// private
+
+const getTerm = (student) => {
+  const nim = student.nim
+  const year = 2000 + parseInt(nim.slice(0, 2))
+  const currentYear = new Date().getFullYear()
+
+  let term = (currentYear - year) * 2
+  if(new Date().getMonth() > 6) term++
+
+  return term
+}
+
+const getQuota = async (student) => {
+  studentPrograms = await StudentProgram.count({where: {
+    studentId: student.id,
+    status: ['applied', 'approved', 'accepted']
+  }})
+  return studentPrograms
 }
 
 module.exports = {
